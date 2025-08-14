@@ -1,5 +1,5 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/db'); // Adjust path as needed
+const sequelize = require('../config/db'); 
 
 module.exports = sequelize.define('Expense', {
     amount: {

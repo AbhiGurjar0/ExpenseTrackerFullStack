@@ -58,7 +58,7 @@ exports.loginUser = async (req, res) => {
         let token = generateToken({ id: user.id, email: user.email });
 
         res.cookie('token', token, { httpOnly: true });
-        return res.redirect('/home');
+        return res.redirect('/');
 
     } catch (err) {
         console.error(err);

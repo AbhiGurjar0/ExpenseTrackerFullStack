@@ -29,7 +29,33 @@
                         <span>
                             <%= item.title %>
                         </span>
-                        <span class="text-red-500 font-semibold">- ₹<%= item.amount %></span>
+
+                        <div class="flex space-x-2">
+                            <span class="text-red-500 font-semibold">- ₹<%= item.amount %></span>
+                            <div class="flex space-x-2">
+                             
+                                <button
+                                    class="p-1.5 text-blue-500 hover:text-blue-700 rounded-full hover:bg-blue-50 transition-colors duration-150"
+                                    onclick="editItem('<%= item.id %>')" aria-label="Edit item" title="Edit">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                    </svg>
+                                </button>
+
+                            
+                                <button
+                                    class="p-1.5 text-red-500 hover:text-red-700 rounded-full hover:bg-red-50 transition-colors duration-150"
+                                    onclick="deleteItem('<%= item.id %>')" aria-label="Delete item" title="Delete">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     <% }) %>
 
@@ -40,11 +66,40 @@
             <h2 class="text-lg font-semibold mb-2">Recent Income</h2>
             <div class="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 p-4 divide-y">
                 <% income.forEach(item=> { %>
-                    <div class="flex justify-between py-2">
-                        <span>
-                            <%= item.title %>
-                        </span>
-                        <span class="text-green-500 font-semibold">+ ₹<%= item.amount %></span>
+                    <div
+                        class="flex justify-between items-center py-3 px-4 bg-white rounded-lg shadow-sm hover:shadow transition-shadow duration-200">
+                        <div class="flex-1 min-w-0">
+                            <span class="text-gray-800 font-medium truncate">
+                                <%= item.title %>
+                            </span>
+                        </div>
+
+                        <div class="flex items-center space-x-4 ml-4">
+                            <span class="text-green-600 font-semibold whitespace-nowrap">
+                                + ₹<%= item.amount %>
+                            </span>
+
+                            <div class="flex space-x-2">
+                                <button
+                                    class="p-1.5 text-blue-500 hover:text-blue-700 rounded-full hover:bg-blue-50 transition-colors duration-150"
+                                    onclick="editItem('<%= item.id %>')" aria-label="Edit item" title="Edit">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                    </svg>
+                                </button>
+                                <button class="p-1.5 text-red-500 hover:text-red-700 rounded-full hover:bg-red-50
+                                transition-colors duration-150" onclick="deleteItem('<%= item.id %>')"
+                                    aria-label="Delete item" title="Delete">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     <% }) %>
             </div>
@@ -85,8 +140,8 @@
             <h2 class="text-lg font-semibold mb-4">Add Entry</h2>
             <form action="/add" method="post" class="space-y-3">
                 <input type="hidden" id="val" name="val" value="">
-                <input type="text" placeholder="Enter title" name="title" class="w-full border px-3 py-2 rounded">
-                <input type="number" placeholder="Enter amount" name="amount" class="w-full border px-3 py-2 rounded">
+                <input type="text" placeholder="Enter title" name="title" class="w-full border px-3 py-2 rounded" required>
+                <input type="number" placeholder="Enter amount" name="amount" class="w-full border px-3 py-2 rounded" required>
                 <div class="flex justify-end space-x-2">
                     <button type="button" onclick="closeInputBox()"
                         class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">Cancel</button>
@@ -104,6 +159,15 @@
         }
         function closeInputBox() {
             document.getElementById('inputBox').classList.add('hidden');
+        }
+        async function deleteItem(id) {
+            await fetch("/delete", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ id })
+            })
         }
     </script>
 

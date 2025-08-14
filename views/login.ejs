@@ -36,7 +36,7 @@
 
         <div id="form-container">
 
-            <form id="loginForm" class="space-y-5">
+            <form method="post" action="/login" id="loginForm" class="space-y-5">
                 <p class="text-center text-gray-500 text-sm mb-3">
                     Don't have an account?
                     <button type="button" id="goSignup"
@@ -82,7 +82,7 @@
             </form>
 
 
-            <form  id="signupForm" class="space-y-5 hidden">
+            <form action="/register" method="post" id="signupForm" class="space-y-5 hidden">
                 <p class="text-center text-gray-500 text-sm mb-3">
                     Already have an account?
                     <button type="button" id="goLogin"
@@ -103,7 +103,7 @@
                 </div>
                 <input type="text" placeholder="Full Name" required
                     class="w-full py-3 px-4 rounded-xl bg-gray-100 border border-transparent focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition placeholder-gray-400"
-                    autocomplete="name" spellcheck="false" minlength="3" name="name" />
+                     spellcheck="false" minlength="3" name="userName" />
                 <input type="email" placeholder="Email" required
                     class="w-full py-3 px-4 rounded-xl bg-gray-100 border border-transparent focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition placeholder-gray-400"
                     autocomplete="email" spellcheck="false" inputmode="email" name="email" />

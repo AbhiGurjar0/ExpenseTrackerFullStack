@@ -1,11 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Expense Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <h1>hello</h1>
+
+<body class="font-[Vactory-Sans] overflow-hidden w-screen min-h-screen flex bg-gray-50 text-gray-800">
+
+
+    <div class="w-[250px] bg-[#F6F4FF] border-r border-gray-200">
+        <%- include('partials/sidebar') %>
+    </div>
+
+
+    <div class="flex-1 flex flex-col p-6 bg-gray-50">
+
+        <h1 class="text-2xl font-bold mb-6">Today</h1>
+
+
+        <div class="mb-6">
+            <h2 class="text-lg font-semibold mb-2">Recent Expenses</h2>
+            <div class="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 p-4 divide-y">
+                <% expense.forEach(item=> { %>
+                    <div class="flex justify-between py-2">
+                        <span>
+                            <%= item.title %>
+                        </span>
+                        <span class="text-red-500 font-semibold">- ₹<%= item.amount %></span>
+                    </div>
+                    <% }) %>
+
+            </div>
+        </div>
+
+        <div class="mb-6">
+            <h2 class="text-lg font-semibold mb-2">Recent Income</h2>
+            <div class="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 p-4 divide-y">
+                <% income.forEach(item=> { %>
+                    <div class="flex justify-between py-2">
+                        <span>
+                            <%= item.title %>
+                        </span>
+                        <span class="text-green-500 font-semibold">+ ₹<%= item.amount %></span>
+                    </div>
+                    <% }) %>
+            </div>
+        </div>
+
+        <div class="mb-8 p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+            <div class="text-3xl font-semibold text-green-600 mb-2">₹<%= totalIncome %>
+            </div>
+            <div class="flex items-center justify-between">
+                <h2 class="text-lg font-medium">Total Income</h2>
+                <button data-type="income" onclick="openInputBox(this)"
+                    class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-full transition-colors duration-200">+</button>
+            </div>
+        </div>
+
+        <div class="p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+            <div class="text-3xl font-semibold text-red-600 mb-2">₹<%= totalExpense %>
+            </div>
+            <div class="flex items-center justify-between">
+                <h2 class="text-lg font-medium">Total Expenses</h2>
+                <button data-type="expenses" onclick="openInputBox(this)"
+                    class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-full transition-colors duration-200">+</button>
+            </div>
+        </div>
+
+        <div class="p-4 mt-5 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+            <div class="text-3xl font-semibold text-blue-600 mb-2">₹<%= Balance %>
+            </div>
+            <div class="flex items-center justify-between">
+                <h2 class="text-lg font-medium">Available Balance</h2>
+
+            </div>
+        </div>
+
+    </div>
+    <div id="inputBox" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-[300px]">
+            <h2 class="text-lg font-semibold mb-4">Add Entry</h2>
+            <form action="/add" method="post" class="space-y-3">
+                <input type="hidden" id="val" name="val" value="">
+                <input type="text" placeholder="Enter title" name="title" class="w-full border px-3 py-2 rounded">
+                <input type="number" placeholder="Enter amount" name="amount" class="w-full border px-3 py-2 rounded">
+                <div class="flex justify-end space-x-2">
+                    <button type="button" onclick="closeInputBox()"
+                        class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">Cancel</button>
+                    <button type="submit"
+                        class="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600">Add</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openInputBox(button) {
+            document.getElementById('inputBox').classList.remove('hidden');
+            document.getElementById('val').value = button.getAttribute('data-type');
+        }
+        function closeInputBox() {
+            document.getElementById('inputBox').classList.add('hidden');
+        }
+    </script>
+
 </body>
+
 </html>

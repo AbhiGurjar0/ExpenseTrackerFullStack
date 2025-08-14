@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expense.IO Sidebar</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-50 font-sans">
+  <div class="w-[250px] min-h-screen bg-[#F6F4FF] flex flex-col justify-between shadow-md">
+    
+    <!-- Logo -->
+    <h2 class="p-4 text-2xl font-bold tracking-wide text-gray-800">Expense.IO</h2>
+    
+    <!-- Navigation -->
+    <ul class="flex-1 space-y-1 px-4">
+      <li>
+        <a href="/home" class="flex items-center py-2 px-3 rounded-lg hover:bg-[#EDE9FE] transition-all duration-200">
+          Dashboard
+        </a>
+      </li>
+      <li>
+        <a href="/transactions" class="flex items-center py-2 px-3 rounded-lg hover:bg-[#EDE9FE] transition-all duration-200">
+          Transactions
+        </a>
+      </li>
+      <li>
+        <a href="/daily" class="flex items-center py-2 px-3 rounded-lg hover:bg-[#EDE9FE] transition-all duration-200">
+          Daily
+        </a>
+      </li>
+      <li>
+        <a href="/income" class="flex items-center py-2 px-3 rounded-lg hover:bg-[#EDE9FE] transition-all duration-200">
+          Income
+        </a>
+      </li>
+      <li>
+        <a href="/expenses" class="flex items-center py-2 px-3 rounded-lg hover:bg-[#EDE9FE] transition-all duration-200">
+          Expense
+        </a>
+      </li>
+      <li>
+        <a href="/settings" class="flex items-center py-2 px-3 rounded-lg hover:bg-[#EDE9FE] transition-all duration-200">
+          Settings
+        </a>
+      </li>
+    </ul>
+    
+    <!-- Logout -->
+    <div class="p-4">
+      <a href="/logout" class="block py-2 px-3 rounded-lg font-semibold text-lg text-red-600 hover:bg-red-50 hover:text-red-700 transition-all duration-200">
+        Logout
+      </a>
+    </div>
+    
+  </div>
+</body>
+
+</html>

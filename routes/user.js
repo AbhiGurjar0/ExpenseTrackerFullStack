@@ -3,24 +3,27 @@ const app = express();
 const auth = require('../middlewares/auth')
 const Expense = require('../models/expense');
 const Income = require('../models/income');
+const User = require('../models/User');
 app.get("/", auth, async (req, res) => {
     const expense = await Expense.findAll({ where: { userId: req.user.id.id } });
     const income = await Income.findAll({ where: { userId: req.user.id.id } });
     const totalIncome = income.reduce((acc, item) => acc + item.amount, 0);
     const totalExpense = expense.reduce((acc, item) => acc + item.amount, 0);
     const Balance = totalIncome - totalExpense;
-    res.render("home", { expense, income, totalIncome, totalExpense, Balance });
+    const user = await User.findOne({ where: { id: req.user.id.id } });
+    res.render("home", { expense, income, totalIncome, totalExpense, Balance, user});
 });
 app.post("/add", auth, async (req, res) => {
     console.log(req.user.id.id)
     let { val, amount, title } = req.body;
-    if (val === 'expenses') {
+    console.log(val)
+    if (val === 'expense') {
         await Expense.create({ amount, title, userId: req.user.id.id })
-            .then(() => res.redirect('/home'))
+            .then(() => res.redirect('/'))
             .catch(err => console.error('Error adding expense', err));
     } else {
         await Income.create({ amount, title, userId: req.user.id.id })
-            .then(() => res.redirect('/home'))
+            .then(() => res.redirect('/'))
             .catch(err => console.error('Error adding income', err));
     }
 

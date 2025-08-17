@@ -11,7 +11,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@cashfreepayments/cashfree-js": "^1.0.5",
     "bcrypt": "^6.0.0",
+    "cashfree-pg": "^5.0.8",
     "cookie-parser": "^1.4.7",
     "dotenv": "^17.2.1",
     "ejs": "^3.1.10",

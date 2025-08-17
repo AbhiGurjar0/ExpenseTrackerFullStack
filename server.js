@@ -21,6 +21,7 @@ app.get("/login", (req, res) => {
   res.render("login");
 });
 app.use('/', routes);
+app.use('/pay', require('./routes/orderRoutes'));
 
 sequelize.sync()
   .then(() => console.log('Database synced'))

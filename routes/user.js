@@ -34,41 +34,40 @@ app.get("/", auth, async (req, res) => {
 app.post("/add", auth, async (req, res) => {
 
     let { val, amount, title } = req.body;
-
-    if (val === 'expense') {
-        await Expense.create({ amount, title, userId: req.user.id.id })
-            .then(() => res.redirect('/'))
-            .catch(err => console.error('Error adding expense', err));
-    } else {
-        await Income.create({ amount, title, userId: req.user.id.id })
-            .then(() => res.redirect('/'))
-            .catch(err => console.error('Error adding income', err));
+    const t = await sequelize.transaction();
+    try {
+        if (val === 'expense') {
+            await Expense.create({ amount, title, userId: req.user.id.id }, { transaction: t });
+            await User.increment({ totalExpense: amount }, { where: { id: req.user.id.id }, transaction: t });
+        } else {
+            await Income.create({ amount, title, userId: req.user.id.id }, { transaction: t });
+        }
+        await t.commit();
+        res.redirect('/');
+    } catch (err) {
+        await t.rollback();
+        console.error('Error adding transaction', err);
+        res.status(500).send("Server error");
     }
 
-})
+});
 
 
 const getUsersWithExpenses = async () => {
     try {
-        const expenses = await Expense.findAll({
+        const expenses = await user.findAll({
             attributes: [
-            'userId',
-            [sequelize.fn('SUM', sequelize.col('amount')), 'totalExpense']
+                'userName',
+                'totalExpense'
             ],
-            include: [
-            {
-                model: User,
-                attributes: ['userName'],
-                where: { isPremium: true }
-            }
-            ],
-            group: ['userId', 'User.id'] 
+            where: { isPremium: true },
+            group: ['id']
         });
 
-       
+
         return expenses.map(exp => ({
-            userName: exp.User.userName,
-            totalExpense: exp.get('totalExpense')
+            userName: exp.userName,
+            totalExpense: exp.totalExpense
         }));
     } catch (err) {
         console.error(err);
@@ -77,6 +76,7 @@ const getUsersWithExpenses = async () => {
 
 app.get("/leaderboard", auth, async (req, res) => {
     const result = await getUsersWithExpenses();
+    // console.log(result)
     result.sort((a, b) => b.totalExpense - a.totalExpense);
     res.render("leaderboard", { user: req.user, users: result });
 });

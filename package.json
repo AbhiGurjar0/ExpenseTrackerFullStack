@@ -12,7 +12,9 @@
   "license": "ISC",
   "dependencies": {
     "@cashfreepayments/cashfree-js": "^1.0.5",
+    "@sendinblue/client": "^3.3.1",
     "bcrypt": "^6.0.0",
+    "body-parser": "^2.2.0",
     "cashfree-pg": "^5.0.8",
     "cookie-parser": "^1.4.7",
     "dotenv": "^17.2.1",
@@ -20,7 +22,10 @@
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.14.3",
+    "nodemailer": "^7.0.5",
     "sequelize": "^6.37.7",
-    "sequelizer": "^1.1.4"
+    "sequelizer": "^1.1.4",
+    "sib-api-v3-sdk": "^8.5.0",
+    "uuid": "^11.1.0"
   }
 }

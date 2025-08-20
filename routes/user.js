@@ -5,7 +5,85 @@ const expense = require('../models/expense');
 const Income = require('../models/income');
 const user = require('../models/User');
 const sequelize = require('../config/db');
-const { User, Expense } = require('../models/index');
+const { User, Expense,ForgotPasswordRequest} = require('../models/index');
+const dotenv = require('dotenv');
+dotenv.config();
+const uuid = require('uuid');
+const forgotPasswordRequest = require('../models/forgot')
+const SibApiV3Sdk = require("sib-api-v3-sdk");
+const bodyParser = require("body-parser");
+const bcrypt = require('bcrypt');
+const client = SibApiV3Sdk.ApiClient.instance;
+const apiKey = client.authentications["api-key"];
+apiKey.apiKey = process.env.SENDINBLUE_API_KEY;
+const tranEmailApi = new SibApiV3Sdk.TransactionalEmailsApi();
+
+
+app.get('/forgot', (req, res) => {
+    res.render("forgot");
+});
+
+app.post("/password/forgotpassword", async (req, res) => {
+    const { email } = req.body;
+
+    try {
+        const sender = { email: "abhishekbainsla190@gmail.com" };
+        const receivers = [{ email }];
+        let uuID = uuid.v4();
+        await tranEmailApi.sendTransacEmail({
+            sender,
+            to: receivers,
+            subject: "Password Reset Request",
+            textContent: `Hello, You requested a password reset. The link for password reset is: ${process.env.FRONTEND_URL}/reset-password?uuid=${uuID}`
+        });
+        await forgotPasswordRequest.create({
+            id: uuID,
+            userId: (await User.findOne({ where: { email } })).id,
+            isActive: true,
+        });
+
+        res.send("Password reset mail sent successfully!");
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Error sending email");
+    }
+});
+app.get('/reset-password', async (req, res) => {
+    const { uuid } = req.query;
+    let curruuid = await forgotPasswordRequest.findByPk(uuid);
+    if (curruuid.isActive) {
+        res.render("reset", { uuid: curruuid.id });
+    }
+    else {
+        return res.status(400).send("This link is expired");
+
+    }
+});
+app.post('/reset-password', async (req, res) => {
+    const { uuid, newPassword } = req.body;
+    try {
+        const forgotRequest = await forgotPasswordRequest.findOne({ where: { id: uuid } });
+
+        if (!forgotRequest || !forgotRequest.isActive) {
+            return res.status(400).send("Invalid or expired reset link");
+        }
+
+        let pass = await bcrypt.hash(newPassword, 10);
+        const user = await User.findOne({ where: { id: forgotRequest.userId } });
+
+        user.password = pass;
+        await user.save();
+
+        forgotRequest.isActive = false;
+        await forgotRequest.save();
+
+        res.send("Password reset successfully");
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Error resetting password");
+    }
+});
+
 app.get("/", auth, async (req, res) => {
     try {
         const expenses = await Expense.findAll({ where: { userId: req.user.id.id } });

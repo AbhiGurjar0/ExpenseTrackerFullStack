@@ -23,6 +23,7 @@
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.14.3",
     "nodemailer": "^7.0.5",
+    "pdfkit": "^0.17.1",
     "sequelize": "^6.37.7",
     "sequelizer": "^1.1.4",
     "sib-api-v3-sdk": "^8.5.0",

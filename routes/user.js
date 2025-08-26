@@ -5,7 +5,7 @@ const expense = require('../models/expense');
 const Income = require('../models/income');
 const user = require('../models/User');
 const sequelize = require('../config/db');
-const { User, Expense,ForgotPasswordRequest} = require('../models/index');
+const { User, Expense, ForgotPasswordRequest } = require('../models/index');
 const dotenv = require('dotenv');
 dotenv.config();
 const uuid = require('uuid');
@@ -13,10 +13,13 @@ const forgotPasswordRequest = require('../models/forgot')
 const SibApiV3Sdk = require("sib-api-v3-sdk");
 const bodyParser = require("body-parser");
 const bcrypt = require('bcrypt');
+const { Op } = require('sequelize');
 const client = SibApiV3Sdk.ApiClient.instance;
 const apiKey = client.authentications["api-key"];
 apiKey.apiKey = process.env.SENDINBLUE_API_KEY;
 const tranEmailApi = new SibApiV3Sdk.TransactionalEmailsApi();
+const PDFDocument = require("pdfkit");
+const fs = require("fs");
 
 
 app.get('/forgot', (req, res) => {
@@ -168,6 +171,187 @@ app.post('/delete', auth, async (req, res) => {
     } catch (error) {
         console.error('Error deleting item', error);
         res.status(500).json({ message: 'Internal server error' });
+    }
+});
+async function generateReports(userId) {
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - 1);
+    let daywiseExp = await expense.findAll({
+        where: {
+            userId: userId,
+            date: {
+                [Op.gte]: startDate,
+            }
+        }
+    });
+
+    let daywiseIncome = await Income.findAll({
+        where: {
+            userId: userId,
+            date: {
+                [Op.gte]: startDate,
+            }
+        }
+    });
+    const currentYear = new Date().getFullYear();
+    const expenses = await expense.findAll({
+        where: {
+            userId: userId,
+            date: {
+                [Op.gte]: new Date(currentYear, 0, 1),
+                [Op.lte]: new Date(currentYear, 11, 31, 23, 59, 59)
+            }
+        }
+    });
+    let monthlyExpense = Array(12).fill(0);
+    expenses.forEach(exp => {
+        const month = exp.date?.getMonth();
+        if (month !== undefined) {
+            monthlyExpense[month] += exp.amount;
+        }
+    });
+    const incomes = await Income.findAll({
+        where: {
+            userId: userId,
+            date: {
+                [Op.gte]: new Date(currentYear, 0, 1),
+                [Op.lte]: new Date(currentYear, 11, 31, 23, 59, 59)
+            }
+        }
+    });
+    let monthlyIncome = Array(12).fill(0);
+    incomes.forEach(exp => {
+        const month = exp.date?.getMonth();
+        if (month !== undefined) {
+            monthlyIncome[month] += exp.amount;
+        }
+    });
+    const monthlyReport = Array.from({ length: 12 }, (_, i) => {
+        return {
+            month: new Date(currentYear, i).toLocaleString("default", { month: "long" }),
+            income: monthlyIncome[i],
+            expense: monthlyExpense[i],
+            savings: monthlyIncome[i] - monthlyExpense[i]
+        };
+    });
+    return ({ daywiseExp, daywiseIncome, monthlyReport });
+
+}
+
+
+app.get('/report', auth, async (req, res) => {
+    const { daywiseExp, daywiseIncome, monthlyReport } = await generateReports(req.user.id.id);
+    res.render("report", { daywiseExp, daywiseIncome, monthlyReport });
+})
+
+
+app.get("/download-report", auth, async (req, res) => {
+    try {
+        const { daywiseExp, daywiseIncome, monthlyReport } = await generateReports(req.user.id.id);
+        const doc = new PDFDocument({ margin: 40 });
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader("Content-Disposition", "attachment; filename=report.pdf");
+        doc.pipe(res);
+
+        doc
+            .fontSize(22)
+            .fillColor("#2563eb")
+            .text(" Expense & Income Report", { align: "center" })
+            .moveDown(2);
+
+
+        doc.fontSize(18).fillColor("#16a34a").text(" Yearly Report", { underline: true }).moveDown(1);
+        doc
+            .fontSize(12)
+            .fillColor("white")
+            .rect(doc.x, doc.y, 600, 20)
+            .fill("#2563eb")
+            .stroke()
+            .fillColor("white")
+            .text("Month", doc.x + 5, doc.y + 5, { continued: true, width: 120 })
+            .text("Income", doc.x + 120, doc.y + 5, { continued: true, width: 120 })
+            .text("Expense", doc.x + 220, doc.y + 5, { continued: true, width: 120 })
+            .text("Savings", doc.x + 300, doc.y + 5);
+
+
+        doc.moveDown(1).fillColor("black");
+
+
+        monthlyReport.forEach((row, idx) => {
+            const bg = idx % 2 === 0 ? "#f1f5f9" : "#ffffff";
+            doc
+                .rect(doc.x, doc.y, 500, 20)
+                .fill(bg)
+                .stroke();
+
+            doc
+                .fillColor("black")
+                .text(row.month, doc.x + 5, doc.y + 5, { continued: true, width: 120 })
+                .text(row.income, doc.x + 100, doc.y + 5, { continued: true, width: 120 })
+                .text(row.expense, doc.x + 210, doc.y + 5, { continued: true, width: 120 })
+                .text(row.savings, doc.x + 300, doc.y + 5);
+            doc.moveDown(0.5);
+        });
+        doc.addPage();
+        doc.fontSize(18).fillColor("#dc2626").text("Daily Report (Previous Month)", { underline: true }).moveDown(1);
+
+        const startDate = new Date();
+        startDate.setMonth(startDate.getMonth() - 1);
+        let daysInPrevMonth = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0).getDate();
+
+        let dailyReport = Array.from({ length: daysInPrevMonth }, (_, i) => ({
+            day: i + 1,
+            income: 0,
+            expense: 0,
+            savings: 0
+        }));
+
+        daywiseExp.forEach(exp => {
+            let day = exp.date?.getDate();
+            if (day) dailyReport[day - 1].expense += exp.amount;
+        });
+        daywiseIncome.forEach(inc => {
+            let day = inc.date?.getDate();
+            if (day) dailyReport[day - 1].income += inc.amount;
+        });
+
+
+        doc
+            .fontSize(12)
+            .fillColor("white")
+            .rect(doc.x, doc.y, 500, 20)
+            .fill("#dc2626")
+            .stroke()
+            .fillColor("white")
+            .text("Day", doc.x + 5, doc.y + 5, { continued: true, width: 120 })
+            .text("Income", doc.x + 130, doc.y + 5, { continued: true, width: 120 })
+            .text("Expense", doc.x + 260, doc.y + 5, { continued: true, width: 120 })
+            .text("Savings", doc.x + 390, doc.y + 5);
+
+        doc.moveDown(1).fillColor("black");
+
+
+        dailyReport.forEach((row, idx) => {
+            const bg = idx % 2 === 0 ? "#fef2f2" : "#ffffff";
+            doc
+                .rect(doc.x, doc.y, 500, 20)
+                .fill(bg)
+                .stroke();
+
+            doc
+                .fillColor("black")
+                .text(`Day ${row.day}`, doc.x + 5, doc.y + 5, { continued: true, width: 120 })
+                .text(row.income, doc.x + 130, doc.y + 5, { continued: true, width: 120 })
+                .text(row.expense, doc.x + 260, doc.y + 5, { continued: true, width: 120 })
+                .text(row.savings, doc.x + 390, doc.y + 5);
+            doc.moveDown(0.5);
+        });
+
+        doc.end();
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Error generating PDF");
     }
 });
 

@@ -7,30 +7,124 @@
     <title>FinSet Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            /* display: flex; */
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .feature-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px -10px rgba(0, 0, 0, 0.15);
+        }
+
+        .premium-badge {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(234, 179, 8, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(234, 179, 8, 0);
+            }
+        }
+
+        .btn {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%);
+            transform-origin: 50% 50%;
+        }
+
+        .btn:hover:after {
+            animation: ripple 1s ease-out;
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 1;
+            }
+
+            20% {
+                transform: scale(25, 25);
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+                transform: scale(40, 40);
+            }
+        }
+
+        .tooltip {
+            position: relative;
+        }
+
+        .tooltip:hover:before {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 5px 10px;
+            background: #333;
+            color: white;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            margin-bottom: 5px;
+        }
+
+        .tooltip:hover:after {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 4px;
+            border-style: solid;
+            border-color: #333 transparent transparent transparent;
+            margin-bottom: 1px;
+        }
+    </style>
 </head>
 
 <body class="bg-gray-100 font-sans">
 
     <div class="flex">
-
-
-        <div class="w-64 bg-purple-800 text-white min-h-screen px-4 py-6">
-            <h1 class="text-lg font-bold mb-4">Expense Tracker</h1>
-            <nav class="space-y-2">
-                <a href="#" class="block py-2 hover:bg-purple-600 rounded">Dashboard</a>
-                <a href="#" class="block py-2 hover:bg-purple-600 rounded">Transactions</a>
-                <a href="#" class="block py-2 hover:bg-purple-600 rounded">Wallet</a>
-                <a href="#" class="block py-2 hover:bg-purple-600 rounded">Goals</a>
-                <a href="#" class="block py-2 hover:bg-purple-600 rounded">Budget</a>
-                <a href="#" class="block py-2 hover:bg-purple-600 rounded">Analytics</a>
-                <a href="#" class="block py-2 hover:bg-purple-600 rounded">Settings</a>
-            </nav>
-            <div class="mt-5">
-                <a href="#" class="block py-2 hover:bg-purple-600 rounded">Help</a>
-                <a href="#" class="block py-2 hover:bg-purple-600 rounded">Log out</a>
-            </div>
-        </div>
-
 
         <div class="flex-1 p-8">
             <div
@@ -49,43 +143,22 @@
                         </p>
                     </div>
 
-                    <% if (user.isPremium) { %>
-                        <div class="flex gap-10">
-                            <div
-                                class="mt-4 flex items-center  bg-yellow-50 px-4 py-2 rounded-xl shadow-sm border border-yellow-200">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-400 animate-bounce"
-                                    fill="currentColor" viewBox="0 0 24 24">
-                                    <path
-                                        d="M12 .587l3.668 7.435L24 9.423l-6 5.851L19.335 24 12 19.897 4.665 24 6 15.274 0 9.423l8.332-1.401z" />
-                                </svg>
-                                <span class="font-semibold text-yellow-600">Premium Member</span>
-                            </div>
-
-                            <a href="/leaderboard"
-                                class=" mt-4 flex items-center px-4 py-2 shadow-sm border inline-block text-purple-600 font-medium bg-white px-4 text-center rounded-xl shadow hover:bg-purple-100 transition">
-                                🏆 See Leaderboard
-                            </a>
-                           
+                    <% if (!(user.isPremium)) { %>
 
 
-                        </div>
-                        <% } else { %>
 
-                            <button id="renderBtn"
-                                class="mt-4 inline-block text-white font-medium bg-gradient-to-r from-purple-500 to-purple-700 px-5 py-2 rounded-xl shadow hover:scale-105 transform transition">
-                                🌟 Upgrade to Premium
-                            </button>
-                            <% } %>
+                        <button id="renderBtn"
+                            class="mt-4 inline-block text-white font-medium bg-gradient-to-r from-purple-500 to-purple-700 px-5 py-2 rounded-xl shadow hover:scale-105 transform transition">
+                            🌟 Upgrade to Premium
+                        </button>
+                        <% } %>
                 </div>
             </div>
 
 
 
 
-            <div class="flex items-center space-x-4 mb-6">
-                <button class="bg-purple-500 text-white px-4 py-2 rounded">This month</button>
-                <button class="bg-white text-purple-500 px-4 py-2 rounded border">Last month</button>
-            </div>
+
 
 
             <div class="grid grid-cols-3 gap-4 mb-6">
@@ -131,138 +204,62 @@
 
             </div>
 
+            <%if(user.isPremium){ %>
+                <div class=" w-full mx-auto p-6 bg-white rounded-2xl shadow-xl">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-2 text-center">Premium Membership</h1>
+                    <p class="text-gray-600 text-center mb-8">Unlock exclusive features with our premium plan</p>
 
 
-            <div class="flex-1 flex flex-col p-6 bg-gray-50">
-
-                <h1 class="text-2xl font-bold mb-6">Today</h1>
-
-
-                <div class="mb-6">
-                    <h2 class="text-lg font-semibold mb-2">Expenses</h2>
                     <div
-                        class="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 p-4 divide-y">
-                        <% expense.forEach(item=> { %>
-                            <div class="flex justify-between py-2">
-                                <span>
-                                    <%= item.title %>
-                                </span>
-
-                                <div class="flex space-x-2">
-                                    <span class="text-red-500 font-semibold">- ₹<%= item.amount %></span>
-                                    <div class="flex space-x-2">
-
-                                        <button
-                                            class="p-1.5 text-blue-500 hover:text-blue-700 rounded-full hover:bg-blue-50 transition-colors duration-150"
-                                            onclick="editItem('<%= item.id %>')" aria-label="Edit item" title="Edit">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                                viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                            </svg>
-                                        </button>
+                        class="premium-badge flex items-center justify-center gap-3 bg-gradient-to-r from-yellow-100 to-yellow-200 px-6 py-4 rounded-2xl shadow-md border border-yellow-300 mb-8 mx-auto max-w-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-yellow-500" fill="currentColor"
+                            viewBox="0 0 24 24">
+                            <path
+                                d="M12 .587l3.668 7.435L24 9.423l-6 5.851L19.335 24 12 19.897 4.665 24 6 15.274 0 9.423l8.332-1.401z" />
+                        </svg>
+                        <span class="font-semibold text-yellow-700 text-lg">Premium Member</span>
+                        <span class="ml-auto text-sm bg-yellow-500 text-white px-2 py-1 rounded-full">Active</span>
+                    </div>
 
 
-                                        <button
-                                            class="p-1.5 text-red-500 hover:text-red-700 rounded-full hover:bg-red-50 transition-colors duration-150"
-                                            onclick="deleteItem('<%= item.id %>')" aria-label="Delete item"
-                                            title="Delete">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                                viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <% }) %>
 
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <a href="/dailyReport"
+                            class="btn tooltip flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-blue-500 text-white font-semibold shadow-lg hover:bg-blue-600"
+                            data-tooltip="View your daily expenses">
+                            <i class="fas fa-calendar-day"></i> Daily Expense
+                        </a>
+
+                        <a href="/report"
+                            class="btn tooltip flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-green-500 text-white font-semibold shadow-lg hover:bg-green-600"
+                            data-tooltip="See comprehensive reports">
+                            <i class="fas fa-chart-pie"></i> Full Report
+                        </a>
+
+                        <a href="/download-report"
+                            class="btn tooltip flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-purple-500 text-white font-semibold shadow-lg hover:bg-purple-600"
+                            data-tooltip="Download your reports">
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                        <a href="/leaderboard"
+                            class="btn tooltip flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-purple-500 text-white font-semibold shadow-lg hover:bg-purple-600"
+                            data-tooltip="Download your reports">
+                            <i class="fas fa-download"></i> Learderboard
+                        </a>
+                    </div>
+
+
+                    <div class="mt-8 text-center text-sm text-gray-500">
+                        <p>Your premium plan renews on <span class="font-semibold">August 30, 2023</span></p>
+                        <p class="mt-2"><a href="#" class="text-blue-500 hover:text-blue-700 hover:underline">Manage
+                                subscription</a> | <a href="#"
+                                class="text-blue-500 hover:text-blue-700 hover:underline">Gift
+                                premium</a></p>
                     </div>
                 </div>
+                <%}%>
 
-                <div class="mb-6">
-                    <h2 class="text-lg font-semibold mb-2">Income</h2>
-                    <div
-                        class="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 p-4 divide-y">
-                        <% income.forEach(item=> { %>
-                            <div
-                                class="flex justify-between items-center py-3 px-4 bg-white rounded-lg shadow-sm hover:shadow transition-shadow duration-200">
-                                <div class="flex-1 min-w-0">
-                                    <span class="text-gray-800 font-medium truncate">
-                                        <%= item.title %>
-                                    </span>
-                                </div>
 
-                                <div class="flex items-center space-x-4 ml-4">
-                                    <span class="text-green-600 font-semibold whitespace-nowrap">
-                                        + ₹<%= item.amount %>
-                                    </span>
-
-                                    <div class="flex space-x-2">
-                                        <button
-                                            class="p-1.5 text-blue-500 hover:text-blue-700 rounded-full hover:bg-blue-50 transition-colors duration-150"
-                                            onclick="editItem('<%= item.id %>')" aria-label="Edit item" title="Edit">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                                viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                            </svg>
-                                        </button>
-                                        <button class="p-1.5 text-red-500 hover:text-red-700 rounded-full hover:bg-red-50
-                                transition-colors duration-150" onclick="deleteItem('<%= item.id %>')"
-                                            aria-label="Delete item" title="Delete">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                                viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <% }) %>
-                    </div>
-                </div>
-            </div>
-            <div class="bg-white rounded p-4 shadow mb-6">
-                <h3 class="text-lg font-bold mb-4">Recent transactions</h3>
-                <table class="min-w-full border-collapse">
-                    <thead>
-                        <tr class="bg-gray-200">
-                            <th class="border px-4 py-2">Date</th>
-                            <th class="border px-4 py-2">Amount</th>
-                            <th class="border px-4 py-2">Payment Name</th>
-                            <th class="border px-4 py-2">Method</th>
-                            <th class="border px-4 py-2">Category</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="border-b">
-                            <td class="border px-4 py-2">25 Jul 12:30</td>
-                            <td class="border px-4 py-2">$10</td>
-                            <td class="border px-4 py-2">YouTube</td>
-                            <td class="border px-4 py-2">VISA **3254</td>
-                            <td class="border px-4 py-2">Subscription</td>
-                        </tr>
-                        <tr class="border-b">
-                            <td class="border px-4 py-2">26 Jul 15:00</td>
-                            <td class="border px-4 py-2">$150</td>
-                            <td class="border px-4 py-2">Reserved</td>
-                            <td class="border px-4 py-2">Mastercard **2154</td>
-                            <td class="border px-4 py-2">Shopping</td>
-                        </tr>
-                        <tr class="border-b">
-                            <td class="border px-4 py-2">27 Jul 9:00</td>
-                            <td class="border px-4 py-2">$80</td>
-                            <td class="border px-4 py-2">Yaposhka</td>
-                            <td class="border px-4 py-2">Mastercard **2154</td>
-                            <td class="border px-4 py-2">Café & Restaurants</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <a href="#" class="text-purple-500 underline">See all</a>
-            </div>
 
         </div>
     </div>
@@ -321,7 +318,6 @@
             };
             await cashfree.checkout(checkoutOptions);
         });
-
 
     </script>
 </body>

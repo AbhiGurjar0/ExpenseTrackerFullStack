@@ -21,6 +21,7 @@ const tranEmailApi = new SibApiV3Sdk.TransactionalEmailsApi();
 const PDFDocument = require("pdfkit");
 const fs = require("fs");
 const isPremium = require('../controllers/isPremium');
+const payment = require('../models/payment')
 
 
 app.get('/forgot', (req, res) => {
@@ -99,13 +100,16 @@ app.get("/", auth, async (req, res) => {
 
         const currentUser = await User.findOne({ where: { id: req.user.id.id } });
 
+
+
         res.render("home", {
             expense: expenses,
             income: incomes,
             totalIncome,
             totalExpense,
             Balance: balance,
-            user: currentUser
+            user: currentUser,
+
         });
     } catch (err) {
         console.error(err);
@@ -139,10 +143,13 @@ const getUsersWithExpenses = async () => {
     try {
         const expenses = await user.findAll({
             attributes: [
-                'userName',
-                'totalExpense'
+            'userName',
+            'totalExpense'
             ],
-            where: { isPremium: true },
+            where: {
+            isPremium: true,
+            totalExpense: { [Op.not]: null }
+            },
             group: ['id']
         });
 
@@ -158,16 +165,20 @@ const getUsersWithExpenses = async () => {
 
 app.get("/leaderboard", auth, isPremium, async (req, res) => {
     const result = await getUsersWithExpenses();
-    // console.log(result)
     result.sort((a, b) => b.totalExpense - a.totalExpense);
     res.render("leaderboard", { user: req.user, users: result });
 });
 
-app.post('/delete', auth, async (req, res) => {
-    const { id } = req.body;
+app.post('/delete/:id', auth, async (req, res) => {
+    const id = req.params.id;
     try {
+      
+        const exp = await expense.findOne({ where: { id, userId: req.user.id.id } });
+        const amountToDecrement = exp && exp.amount ? exp.amount : 0;
         await expense.destroy({ where: { id, userId: req.user.id.id } });
         await Income.destroy({ where: { id, userId: req.user.id.id } });
+        await User.decrement({ totalExpense: amountToDecrement }, { where: { id: req.user.id.id } });
+        // await User.save();
         res.status(200).json({ message: 'Item deleted successfully' });
     } catch (error) {
         console.error('Error deleting item', error);

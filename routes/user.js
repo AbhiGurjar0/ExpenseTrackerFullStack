@@ -20,6 +20,7 @@ apiKey.apiKey = process.env.SENDINBLUE_API_KEY;
 const tranEmailApi = new SibApiV3Sdk.TransactionalEmailsApi();
 const PDFDocument = require("pdfkit");
 const fs = require("fs");
+const isPremium = require('../controllers/isPremium');
 
 
 app.get('/forgot', (req, res) => {
@@ -155,7 +156,7 @@ const getUsersWithExpenses = async () => {
     }
 };
 
-app.get("/leaderboard", auth, async (req, res) => {
+app.get("/leaderboard", auth, isPremium, async (req, res) => {
     const result = await getUsersWithExpenses();
     // console.log(result)
     result.sort((a, b) => b.totalExpense - a.totalExpense);
@@ -238,14 +239,19 @@ async function generateReports(userId) {
 
 }
 
+app.get('/api/report', auth, isPremium, async (req, res) => {
+    const { daywiseExp, daywiseIncome, monthlyReport } = await generateReports(req.user.id.id);
 
-app.get('/report', auth, async (req, res) => {
+    res.json({ daywiseExp, daywiseIncome, monthlyReport });
+});
+
+app.get('/report', auth, isPremium, async (req, res) => {
     const { daywiseExp, daywiseIncome, monthlyReport } = await generateReports(req.user.id.id);
     res.render("report", { daywiseExp, daywiseIncome, monthlyReport });
 })
 
 
-app.get("/download-report", auth, async (req, res) => {
+app.get("/download-report", auth, isPremium, async (req, res) => {
     try {
         const { daywiseExp, daywiseIncome, monthlyReport } = await generateReports(req.user.id.id);
         const doc = new PDFDocument({ margin: 40 });
@@ -354,6 +360,8 @@ app.get("/download-report", auth, async (req, res) => {
         res.status(500).send("Error generating PDF");
     }
 });
-
+app.get('/dailyReport', auth, isPremium, (req, res) => {
+    res.render('daily');
+});
 
 module.exports = app;

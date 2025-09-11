@@ -17,12 +17,14 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const compression = require('compression');
 const fs = require('fs');
+const cors = require('cors');
 
 
 let logfile = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' });
 // app.use(helmet());
 app.use(morgan('combined', { stream: logfile }));
 app.use(compression());
+app.use(cors());
 app.set("view engine", "ejs");
 app.use('/register', registerUser);
 app.post('/login', loginUser);

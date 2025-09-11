@@ -445,3 +445,5 @@
 ::ffff:127.0.0.1 - - [10/Sep/2025:17:33:43 +0000] "GET / HTTP/1.1" 302 35 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:142.0) Gecko/20100101 Firefox/142.0"
 ::ffff:127.0.0.1 - - [10/Sep/2025:17:33:43 +0000] "GET /login HTTP/1.1" 304 - "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:142.0) Gecko/20100101 Firefox/142.0"
 ::ffff:127.0.0.1 - - [10/Sep/2025:17:33:44 +0000] "GET /favicon.ico HTTP/1.1" 404 150 "http://localhost:3000/login" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:142.0) Gecko/20100101 Firefox/142.0"
+::ffff:127.0.0.1 - - [11/Sep/2025:06:14:09 +0000] "POST /pay HTTP/1.1" 302 28 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:142.0) Gecko/20100101 Firefox/142.0"
+::ffff:127.0.0.1 - - [11/Sep/2025:06:14:22 +0000] "POST /pay HTTP/1.1" 302 28 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:142.0) Gecko/20100101 Firefox/142.0"

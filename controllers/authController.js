@@ -29,7 +29,8 @@ exports.registerUser = async (req, res) => {
             password: hashedPassword
         });
 
-        return res.status(201).json({ message: 'User registered successfully', user: newUser });
+        // return res.status(201).json({ message: 'User registered successfully', user: newUser });
+         res.redirect('/login');
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Server error' });

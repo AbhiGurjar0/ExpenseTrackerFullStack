@@ -22,7 +22,7 @@ exports.createOrder = async (
             customer_email: "customer@example.com"
         },
         order_meta: {
-            return_url: `http://localhost:3000/pay/order-status/${order_id}`,
+            return_url: `https://expensetrackerfullstack2.onrender.com/pay/order-status/${order_id}`,
             // notify_url: "http://localhost:3000/webhooks/" + order_id,
             payment_methods: "cc,dc,upi"
         },

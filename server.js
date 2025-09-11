@@ -5,6 +5,7 @@ const sequelize = require('./config/db');
 const dotenv = require('dotenv');
 const cookieParser = require('cookie-parser');
 const routes = require('./routes/user')
+const path = require('path')
 dotenv.config();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -17,8 +18,9 @@ const morgan = require('morgan');
 const compression = require('compression');
 const fs = require('fs');
 
+
 let logfile = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' });
-app.use(helmet());
+// app.use(helmet());
 app.use(morgan('combined', { stream: logfile }));
 app.use(compression());
 app.set("view engine", "ejs");

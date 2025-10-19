@@ -143,12 +143,12 @@ const getUsersWithExpenses = async () => {
     try {
         const expenses = await user.findAll({
             attributes: [
-            'userName',
-            'totalExpense'
+                'userName',
+                'totalExpense'
             ],
             where: {
-            isPremium: true,
-            totalExpense: { [Op.not]: null }
+                isPremium: true,
+                totalExpense: { [Op.not]: null }
             },
             group: ['id']
         });
@@ -172,7 +172,7 @@ app.get("/leaderboard", auth, isPremium, async (req, res) => {
 app.post('/delete/:id', auth, async (req, res) => {
     const id = req.params.id;
     try {
-      
+
         const exp = await expense.findOne({ where: { id, userId: req.user.id.id } });
         const amountToDecrement = exp && exp.amount ? exp.amount : 0;
         await expense.destroy({ where: { id, userId: req.user.id.id } });

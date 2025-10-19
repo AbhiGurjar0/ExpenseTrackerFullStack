@@ -12,6 +12,7 @@ const auth = (req, res, next) => {
     } catch (err) {
         return res.redirect('/login');
     }
+   
 };
 
 module.exports = auth;

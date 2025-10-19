@@ -249,13 +249,7 @@
                     </div>
 
 
-                    <div class="mt-8 text-center text-sm text-gray-500">
-                        <p>Your premium plan renews on <span class="font-semibold">August 30, 2023</span></p>
-                        <p class="mt-2"><a href="#" class="text-blue-500 hover:text-blue-700 hover:underline">Manage
-                                subscription</a> | <a href="#"
-                                class="text-blue-500 hover:text-blue-700 hover:underline">Gift
-                                premium</a></p>
-                    </div>
+                   
                 </div>
                 <%}%>
 
@@ -305,7 +299,7 @@
         });
         document.getElementById("renderBtn").addEventListener("click", async () => {
 
-            const response = await fetch("https://expensetrackerfullstack2.onrender.com/pay", {
+            const response = await fetch("http://localhost:3000/pay", {
                 method: "POST",
             });
 

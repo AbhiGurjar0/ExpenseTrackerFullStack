@@ -1,11 +1,13 @@
 const express = require('express');
 const app = express();
 const { registerUser, loginUser, logoutUser } = require('./controllers/authController');
-const sequelize = require('./config/db');
 const dotenv = require('dotenv');
 const cookieParser = require('cookie-parser');
 const routes = require('./routes/user')
-const path = require('path')
+const path = require('path');
+const mongoose = require('mongoose');
+const db = require('./config/db');
+
 dotenv.config();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -35,9 +37,6 @@ app.get("/login", (req, res) => {
 app.use('/', routes);
 app.use('/pay', require('./routes/orderRoutes'));
 
-sequelize.sync()
-  .then(() => console.log('Database synced'))
-  .catch((err) => console.error('Error syncing DB', err));
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
 });

@@ -4,7 +4,7 @@ const User = require('../models/User');
 
 const isPremium = async (req, res, next) => {
     try {
-        const user = await User.findByPk(req.user.id.id);
+        const user = await User.findById(req.user.id.id);
         if (!user) return res.status(404).send("User not found");
         if(user.isPremium) {
             next();

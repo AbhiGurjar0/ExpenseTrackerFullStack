@@ -46,7 +46,7 @@ exports.loginUser = async (req, res) => {
         }
 
         email = email.toLowerCase();
-        let user = await User.findOne({ where: { email } });
+        let user = await User.findOne({email:email});
         if (!user) {
             return res.status(401).json({ message: 'Invalid email or password' });
         }

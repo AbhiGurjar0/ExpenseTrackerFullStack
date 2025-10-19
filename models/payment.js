@@ -1,33 +1,17 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/db');
+const mongoose = require("mongoose");
+const { Schema } = mongoose;
 
-const Payment = sequelize.define('Payment', {
-    orderId: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    paymentSessionId: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        trim: true,
-    },
-    amount: {
-        type: DataTypes.FLOAT,
-        allowNull: false,
-    },
-    orderCurrency: {
-        type: DataTypes.STRING,
-        trim: true,
-    },
-    paymentStatus: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        trim: true,
-    }
-
-}, {
-    tableName: 'payments',
+const paymentSchema = new Schema(
+  {
+    orderId: { type: String, required: true },
+    paymentSessionId: { type: String, required: true, trim: true },
+    amount: { type: Number, required: true },
+    orderCurrency: { type: String, trim: true },
+    paymentStatus: { type: String, required: true, trim: true },
+  },
+  {
     timestamps: false,
-});
+  }
+);
 
-module.exports = Payment;
+module.exports = mongoose.model("Payment", paymentSchema);

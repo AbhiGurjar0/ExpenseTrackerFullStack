@@ -3,9 +3,9 @@ const app = express();
 const auth = require('../middlewares/auth')
 const expense = require('../models/expense');
 const Income = require('../models/income');
-const user = require('../models/User');
-const sequelize = require('../config/db');
-const { User, Expense, ForgotPasswordRequest } = require('../models/index');
+const User = require('../models/User');
+// const { User, Expense, forgot } = require('../models/index');
+const Expense = require('../models/expense');
 const dotenv = require('dotenv');
 dotenv.config();
 const uuid = require('uuid');
@@ -13,7 +13,6 @@ const forgotPasswordRequest = require('../models/forgot')
 const SibApiV3Sdk = require("sib-api-v3-sdk");
 const bodyParser = require("body-parser");
 const bcrypt = require('bcrypt');
-const { Op } = require('sequelize');
 const client = SibApiV3Sdk.ApiClient.instance;
 const apiKey = client.authentications["api-key"];
 apiKey.apiKey = process.env.SENDINBLUE_API_KEY;
@@ -43,7 +42,7 @@ app.post("/password/forgotpassword", async (req, res) => {
         });
         await forgotPasswordRequest.create({
             id: uuID,
-            userId: (await User.findOne({ where: { email } })).id,
+            userId: (await User.findOne({ email :email })).id,
             isActive: true,
         });
 
@@ -55,7 +54,7 @@ app.post("/password/forgotpassword", async (req, res) => {
 });
 app.get('/reset-password', async (req, res) => {
     const { uuid } = req.query;
-    let curruuid = await forgotPasswordRequest.findByPk(uuid);
+    let curruuid = await forgotPasswordRequest.findOne({id:uuid});
     if (curruuid.isActive) {
         res.render("reset", { uuid: curruuid.id });
     }
@@ -91,14 +90,14 @@ app.post('/reset-password', async (req, res) => {
 
 app.get("/", auth, async (req, res) => {
     try {
-        const expenses = await Expense.findAll({ where: { userId: req.user.id.id } });
-        const incomes = await Income.findAll({ where: { userId: req.user.id.id } });
+        const expenses = await Expense.find({userId: req.user.id.id  });
+        const incomes = await Income.find({  userId: req.user.id.id  });
 
         const totalIncome = incomes.reduce((acc, item) => acc + item.amount, 0);
         const totalExpense = expenses.reduce((acc, item) => acc + item.amount, 0);
         const balance = totalIncome - totalExpense;
 
-        const currentUser = await User.findOne({ where: { id: req.user.id.id } });
+        const currentUser = await User.findOne({  id: req.user.id.id  });
 
 
 

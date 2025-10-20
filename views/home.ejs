@@ -4,298 +4,710 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FinSet Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
+    <title>Expense Tracker | Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #4f46e5;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --light: #f8f9fa;
+            --dark: #4338ca;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+        }
 
         body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
-            /* display: flex; */
-            align-items: center;
-            justify-content: center;
-            /* padding: 20px; */
+            background-color: #f5f7fb;
+            color: var(--dark);
+            line-height: 1.6;
         }
 
-        .feature-card {
-            transition: all 0.3s ease;
-            border-left: 4px solid;
+
+        .footer {
+            background: linear-gradient(135deg, #1a2a57 0%, #2c3e6e 100%);
+            color: #fff;
+            padding: 3rem 1rem 1.5rem;
+            margin-top: auto;
         }
 
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px -10px rgba(0, 0, 0, 0.15);
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
         }
 
-        .premium-badge {
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% {
-                box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.4);
-            }
-
-            70% {
-                box-shadow: 0 0 0 10px rgba(234, 179, 8, 0);
-            }
-
-            100% {
-                box-shadow: 0 0 0 0 rgba(234, 179, 8, 0);
-            }
-        }
-
-        .btn {
-            transition: all 0.3s ease;
+        .footer-section h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
             position: relative;
-            overflow: hidden;
+            padding-bottom: 0.5rem;
         }
 
-        .btn:after {
+        .footer-section h3::after {
             content: '';
             position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 5px;
-            height: 5px;
-            background: rgba(255, 255, 255, 0.5);
-            opacity: 0;
-            border-radius: 100%;
-            transform: scale(1, 1) translate(-50%);
-            transform-origin: 50% 50%;
+            left: 0;
+            bottom: 0;
+            width: 40px;
+            height: 2px;
+            background-color: #4CAF50;
         }
 
-        .btn:hover:after {
-            animation: ripple 1s ease-out;
+        .footer-section p {
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            color: #b0b8d0;
         }
 
-        @keyframes ripple {
-            0% {
-                transform: scale(0, 0);
-                opacity: 1;
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-links a {
+            color: #b0b8d0;
+            text-decoration: none;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+        }
+
+        .footer-links a:hover {
+            color: #4CAF50;
+        }
+
+        .footer-links a i {
+            margin-right: 8px;
+            font-size: 0.9rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: #fff;
+            transition: all 0.3s;
+        }
+
+        .social-links a:hover {
+            background-color: #4CAF50;
+            transform: translateY(-3px);
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 2rem auto 0;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            color: #b0b8d0;
+            font-size: 0.9rem;
+        }
+
+        .footer-bottom-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .footer-bottom-links a {
+            color: #b0b8d0;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-bottom-links a:hover {
+            color: #4CAF50;
+        }
+
+        .app-badges {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .app-badge {
+            display: inline-block;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.8rem;
+            transition: background-color 0.3s;
+        }
+
+        .app-badge:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .footer-container {
+                grid-template-columns: 1fr;
             }
 
-            20% {
-                transform: scale(25, 25);
-                opacity: 1;
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
             }
 
-            100% {
-                opacity: 0;
-                transform: scale(40, 40);
+            .footer-bottom-links {
+                justify-content: center;
             }
         }
 
-        .tooltip {
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card2 {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            width: 50%;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card2:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .stat-card i {
+            font-size: 24px;
+            padding: 12px;
+            border-radius: 10px;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .income i {
+            background-color: rgba(76, 201, 240, 0.2);
+            color: var(--success);
+        }
+
+        .expense i {
+            background-color: rgba(247, 37, 133, 0.2);
+            color: var(--danger);
+        }
+
+        .balance i {
+            background-color: rgba(67, 97, 238, 0.2);
+            color: var(--primary);
+        }
+
+        .budget i {
+            background-color: rgba(248, 150, 30, 0.2);
+            color: var(--warning);
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .stat-title {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .main-content2 {
+            width: 100%;
+            display: flex;
+            gap: 20px;
+        }
+
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title a {
+            font-size: 14px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .chart-container {
+            height: 250px;
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
+            padding: 20px 0;
+        }
+
+        .bar {
+            flex: 1;
+            background: linear-gradient(to top, var(--primary), var(--success));
+            border-radius: 5px 5px 0 0;
             position: relative;
+            min-height: 1px;
         }
 
-        .tooltip:hover:before {
-            content: attr(data-tooltip);
+        .bar-label {
             position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 5px 10px;
-            background: #333;
-            color: white;
-            border-radius: 4px;
+            bottom: -25px;
+            left: 0;
+            right: 0;
+            text-align: center;
             font-size: 12px;
-            white-space: nowrap;
+            color: var(--gray);
+        }
+
+        .transactions {
+            list-style: none;
+        }
+
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .transaction-item:last-child {
+            border-bottom: none;
+        }
+
+        .transaction-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .transaction-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .transaction-details h4 {
+            font-size: 15px;
+            /* font-size: 15px; */
+            font-weight: bold;
             margin-bottom: 5px;
         }
 
-        .tooltip:hover:after {
-            content: '';
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            border-width: 4px;
-            border-style: solid;
-            border-color: #333 transparent transparent transparent;
-            margin-bottom: 1px;
+        .transaction-details p {
+            font-size: 13px;
+            color: var(--gray);
+        }
+
+        .transaction-amount {
+            font-weight: 600;
+        }
+
+        .expense-amount {
+            color: var(--danger);
+        }
+
+        .income-amount {
+            color: var(--success);
+        }
+
+        .category-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .category-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .category-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .category-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .category-name {
+            font-size: 14px;
+        }
+
+        .category-amount {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background-color: var(--light-gray);
+            border-radius: 3px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            border-radius: 3px;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .action-btn {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 10px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            text-decoration: none;
+            color: var(--dark);
+            transition: transform 0.3s ease;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+        }
+
+        .action-btn i {
+            font-size: 20px;
+            padding: 12px;
+            border-radius: 10px;
+            color: white;
+        }
+
+        .add-expense i {
+            background-color: var(--danger);
+        }
+
+        .add-income i {
+            background-color: var(--success);
+        }
+
+        .set-budget i {
+            background-color: var(--warning);
+        }
+
+        .action-btn span {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        @media (max-width: 992px) {
+            .dashboard {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-actions {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 
-<body class="bg-gray-100 font-sans">
-    <nav class="bg-white shadow-md  w-full  z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16 items-center">
-
-                <!-- Logo -->
-                <div class="text-2xl font-bold text-indigo-600">ExpenseTracker</div>
-
-                <!-- Desktop Menu -->
-                <div class="hidden md:flex space-x-6">
-                    <a href="#dashboard"
-                        class="text-gray-700 hover:text-indigo-600 transition duration-200">Dashboard</a>
-                    <a href="#expenses" class="text-gray-700 hover:text-indigo-600 transition duration-200">Expenses</a>
-                    <a href="#reports" class="text-gray-700 hover:text-indigo-600 transition duration-200">Reports</a>
-                    <a href="#settings" class="text-gray-700 hover:text-indigo-600 transition duration-200">Settings</a>
-                </div>
-
-                <!-- Mobile Menu Button -->
-                <div class="md:hidden">
-                    <button id="menu-btn" class="text-gray-700 focus:outline-none">
-                        <!-- Hamburger Icon -->
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 6h16M4 12h16M4 18h16"></path>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden md:hidden bg-white shadow-md">
-            <a href="#dashboard" class="block px-4 py-2 text-gray-700 hover:bg-indigo-50">Dashboard</a>
-            <a href="#expenses" class="block px-4 py-2 text-gray-700 hover:bg-indigo-50">Expenses</a>
-            <a href="#reports" class="block px-4 py-2 text-gray-700 hover:bg-indigo-50">Reports</a>
-            <a href="#settings" class="block px-4 py-2 text-gray-700 hover:bg-indigo-50">Settings</a>
-        </div>
-    </nav>
-
-    <div class="flex mt-10">
-
-        <div class="flex-1 p-8">
-            <div
-                class="mb-6 bg-white shadow-md rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-6">
-                <div
-                    class="w-full  bg-gradient-to-r from-purple-50 to-purple-100 p-6 rounded-2xl shadow-sm flex justify-between">
-                    <div>
-                        <h2 class="text-3xl font-bold">
-                            Welcome back,
-                            <span class="text-purple-600 animate-pulse">
-                                <%= user?.userName %> ✨
-                            </span>
-                        </h2>
-                        <p class="text-gray-700 mt-1">
-                            It’s the perfect time to manage your finances 🚀
-                        </p>
+<body>
+    <div class="container w-full mx-auto p-4">
+        <header class="bg-white shadow-sm mb-10">
+            <div class="container mx-auto px-4 py-4">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-chart-pie text-primary text-xl"></i>
+                        <h1 class="text-xl font-bold text-gray-800">ExpenseTracker</h1>
                     </div>
-
-                    <% if (!(user?.isPremium)) { %>
-
-
-
-                        <button id="renderBtn"
-                            class="mt-4 inline-block text-white font-medium bg-gradient-to-r from-purple-500 to-purple-700 px-5 py-2 rounded-xl shadow hover:scale-105 transform transition">
-                            🌟 Upgrade to Premium
-                        </button>
-                        <% } %>
-                </div>
-            </div>
-
-
-
-
-
-
-
-            <div class="grid grid-cols-3 gap-4 mb-6">
-                <div class="bg-white p-4 rounded shadow">
-                    <div class="flex justify-between">
-                        <span class="text-gray-600">Total balance</span>
-
-                    </div>
-                    <h3 class="text-xl font-bold">
-                        ₹<%=Balance%>
-                    </h3>
-
-                </div>
-
-                <div class="bg-white p-4 rounded shadow flex justify-between items-center">
-                    <div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">Income</span>
-
+                    <div class="flex items-center space-x-4">
+                        <div class="md:flex space-x-6">
+                            <a href="#dashboard"
+                                class="text-gray-700 hover:text-indigo-600 transition duration-200">Dashboard</a>
+                            <a href="/transactions"
+                                class="text-gray-700 hover:text-indigo-600 transition duration-200">Transations</a>
+                            <a href="/dayWise"
+                                class="text-gray-700 hover:text-indigo-600 transition duration-200">Daily</a>
+                            <a href="#settings"
+                                class="text-gray-700 hover:text-indigo-600 transition duration-200">Settings</a>
                         </div>
-                        <h3 class="text-xl font-bold">₹<%= totalIncome %>
-                        </h3>
-                    </div>
-                    <button data-type="income" onclick="openInputBox(this)"
-                        class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-full transition-colors duration-200">+</button>
 
-                </div>
-
-                <div class="bg-white p-4 rounded shadow flex justify-between items-center">
-                    <div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">Expense</span>
-
+                        <div
+                            class="w-10 h-10  bg-[--dark] rounded-full flex items-center justify-center text-white font-bold">
+                            <%=user?.userName?.substr(0,2)%>
                         </div>
-                        <h3 class="text-xl font-bold">₹<%= totalExpense %>
-                        </h3>
+
                     </div>
-                    <button data-type="expense" onclick="openInputBox(this)"
-                        class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-full transition-colors duration-200">+</button>
-
                 </div>
-
-
             </div>
+        </header>
 
-            <%if(user?.isPremium){ %>
-                <div class=" w-full mx-auto p-6 bg-white rounded-2xl shadow-xl">
-                    <h1 class="text-3xl font-bold text-gray-800 mb-2 text-center">Premium Membership</h1>
-                    <p class="text-gray-600 text-center mb-8">Unlock exclusive features with our premium plan</p>
+        <div class="dashboard">
+            <div class="card  stat-card income">
+                <i class="fas fa-wallet"></i>
+                <div class="stat-value">₹<%=totalIncome%>
+                </div>
+                <div class="stat-title">Total Income</div>
+            </div>
+            <div class="card stat-card expense">
+                <i class="fas fa-money-bill-wave"></i>
+                <div class="stat-value">₹<%=totalExpense%>
+                </div>
+                <div class="stat-title">Total Expenses</div>
+            </div>
+            <div class="card stat-card balance">
+                <i class="fas fa-piggy-bank"></i>
+                <div class="stat-value">₹<%=totalIncome-totalExpense%></div>
+                <div class="stat-title">Current Balance</div>
+            </div>
+            <div class="card stat-card budget">
+                <i class="fas fa-chart-line"></i>
+                <div class="stat-value">₹800</div>
+                <div class="stat-title">Monthly Budget</div>
+            </div>
+        </div>
 
+        <div class="main-content mb-10">
+            <div class="card">
+                <div class="section-title">
+                    <span>Expense Overview</span>
+                    <a href="#">View Report <i class="fas fa-chevron-right"></i></a>
+                </div>
+                <div class="chart-container">
+                    <%completeHeights.forEach((val,ind)=>{%>
+                        <%=console.log(val)%>
+                            <div class="bar" style="height: <%= val.height %>%">
+                                <div class="bar-label">
+                                    <%=val.month%>
+                                </div>
+                            </div>
 
-                    <div
-                        class="premium-badge flex items-center justify-center gap-3 bg-gradient-to-r from-yellow-100 to-yellow-200 px-6 py-4 rounded-2xl shadow-md border border-yellow-300 mb-8 mx-auto max-w-md">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-yellow-500" fill="currentColor"
-                            viewBox="0 0 24 24">
-                            <path
-                                d="M12 .587l3.668 7.435L24 9.423l-6 5.851L19.335 24 12 19.897 4.665 24 6 15.274 0 9.423l8.332-1.401z" />
-                        </svg>
-                        <span class="font-semibold text-yellow-700 text-lg">Premium Member</span>
-                        <span class="ml-auto text-sm bg-yellow-500 text-white px-2 py-1 rounded-full">Active</span>
-                    </div>
-
-
-
-                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                        <a href="/dailyReport"
-                            class="btn tooltip flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-blue-500 text-white font-semibold shadow-lg hover:bg-blue-600"
-                            data-tooltip="View your daily expenses">
-                            <i class="fas fa-calendar-day"></i> Daily Expense
-                        </a>
-
-                        <a href="/report"
-                            class="btn tooltip flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-green-500 text-white font-semibold shadow-lg hover:bg-green-600"
-                            data-tooltip="See comprehensive reports">
-                            <i class="fas fa-chart-pie"></i> Full Report
-                        </a>
-
-                        <a href="/download-report"
-                            class="btn tooltip flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-purple-500 text-white font-semibold shadow-lg hover:bg-purple-600"
-                            data-tooltip="Download your reports">
-                            <i class="fas fa-download"></i> Download
-                        </a>
-                        <a href="/leaderboard"
-                            class="btn tooltip flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-purple-500 text-white font-semibold shadow-lg hover:bg-purple-600"
-                            data-tooltip="Download your reports">
-                            <i class="fas fa-download"></i> Learderboard
-                        </a>
-                    </div>
-
-
+                            <% })%>
 
                 </div>
-                <%}%>
-
-
-
+            </div>
         </div>
+        <div class="main-content2">
+            <div class="card2">
+                <div class="section-title">
+                    <span>Quick Actions</span>
+                </div>
+                <div class="quick-actions">
+                    <div data-type="expense" onclick="openInputBox(this)" class="action-btn add-expense">
+                        <i class="fas fa-plus"></i>
+                        <span>Add Expense</span>
+                    </div>
+                    <div data-type="income" onclick="openInputBox(this)" class="action-btn add-income">
+                        <i class="fas fa-plus"></i>
+                        <span>Add Income</span>
+                    </div>
+                    <a href="#" class="action-btn set-budget">
+                        <i class="fas fa-chart-pie"></i>
+                        <span>Set Budget</span>
+                    </a>
+                </div>
+
+                <div class="section-title" style="margin-top: 25px;">
+                    <span>Budget Status</span>
+                </div>
+                <div class="category-list">
+                    <div class="category-item">
+                        <div class="category-info">
+                            <div class="category-name">Monthly Budget</div>
+                        </div>
+                        <div class="category-amount">₹800 / ₹1,000</div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 80%; background-color: #4361ee;"></div>
+                    </div>
+
+                    <div class="category-item">
+                        <div class="category-info">
+                            <div class="category-name">Food Budget</div>
+                        </div>
+                        <div class="category-amount">₹320 / ₹400</div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 80%; background-color: #f72585;"></div>
+                    </div>
+
+                    <div class="category-item">
+                        <div class="category-info">
+                            <div class="category-name">Entertainment Budget</div>
+                        </div>
+                        <div class="category-amount">₹120 / ₹150</div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 80%; background-color: #f8961e;"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="card2">
+                <div class="section-title">
+                    <span>Recent Transactions</span>
+                    <a href="/transactions">See All <i class="fas fa-chevron-right"></i></a>
+                </div>
+                <ul class="transactions">
+                    <%transactions?.slice(-5)?.reverse()?.forEach((trans)=>{%>
+                        <li class="transaction-item">
+                            <div class="transaction-info">
+
+                                <div class="transaction-details">
+                                    <h4>
+                                        <%=trans?.title%>
+                                    </h4>
+                                    <p>
+                                        <%=trans.date%>
+                                    </p>
+                                </div>
+                            </div>
+                            <%if(trans.type==='expense'){%>
+                                <div class="transaction-amount expense-amount">-₹<%=trans.amount%>
+                                </div>
+
+                                <% } else{%>
+                                    <div class="transaction-amount income-amount">+₹<%=trans.amount%>
+                                    </div>
+
+                                    <% }%>
+
+                        </li>
+
+                        <%})%>
+
+
+                </ul>
+            </div>
+        </div>
+
+
     </div>
 
+
+
+
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>About ExpenseTracker</h3>
+                <p>Take control of your finances with our intuitive expense tracking app. Monitor spending, set budgets,
+                    and achieve your financial goals.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul class="footer-links w-full flex gap-5 flex-wrap">
+                    <li class="w-[10vw]"><a href="/"><i class="fas fa-chevron-right"></i> Dashboard</a></li>
+                    <li class="w-[10vw]"><a href="/transactions"><i class="fas fa-chevron-right"></i> Expenses</a></li>
+                    <li class="w-[10vw]"><a href="/daywise"><i class="fas fa-chevron-right"></i> Budgets</a></li>
+                    <li class="w-[10vw]"><a href="/leaderboard2"><i class="fas fa-chevron-right"></i> Reports</a></li>
+                    <li class="w-[10vw]"><a href="/settings"><i class="fas fa-chevron-right"></i> Categories</a></li>
+                </ul>
+            </div>
+
+
+
+        </div>
+
+        <div class="footer-bottom">
+            <div class="copyright">
+                &copy; 2025 ExpenseTracker. All rights reserved.
+            </div>
+            <div class="footer-bottom-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Cookie Policy</a>
+            </div>
+        </div>
+    </footer>
     <div id="inputBox" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
         <div class="bg-white p-6 rounded-lg shadow-lg w-[300px]">
             <h2 class="text-lg font-semibold mb-4">Add Entry</h2>
@@ -303,8 +715,19 @@
                 <input type="hidden" id="val" name="val" value="">
                 <input type="text" placeholder="Enter title" name="title" class="w-full border px-3 py-2 rounded"
                     required>
+                <select name="category" id="cat" class="w-full border px-3 py-2 rounded bg-transparent">
+                    <option value="food">Food & Dining</option>
+                    <option value="Entertainment">Entertainment</option>
+                    <option value="Office">Office</option>
+                    <option value="Medical">Medical</option>
+                    <option value="JOb">Job</option>
+                </select>
+
                 <input type="number" placeholder="Enter amount" name="amount" class="w-full border px-3 py-2 rounded"
                     required>
+                <input type="text" placeholder="Enter Description" name="desc" id="" class="w-full border px-3 py-2 rounded">
+
+
                 <div class="flex justify-end space-x-2">
                     <button type="button" onclick="closeInputBox()"
                         class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">Cancel</button>
@@ -315,42 +738,31 @@
         </div>
     </div>
 
+
     <script>
+
+        //open Add Entry Box
         function openInputBox(button) {
             document.getElementById('inputBox').classList.remove('hidden');
             document.getElementById('val').value = button.getAttribute('data-type');
         }
+
+        ///close Add Entry Box
         function closeInputBox() {
             document.getElementById('inputBox').classList.add('hidden');
         }
-        async function deleteItem(id) {
-            await fetch("/delete", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ id })
-            })
-        }
-        const cashfree = Cashfree({
-            mode: "sandbox",
-        });
-        document.getElementById("renderBtn").addEventListener("click", async () => {
-
-            const response = await fetch("http://localhost:3000/pay", {
-                method: "POST",
+        // Simple animation for the chart bars
+        document.addEventListener('DOMContentLoaded', function () {
+            const bars = document.querySelectorAll('.bar');
+            bars.forEach(bar => {
+                const height = bar.style.height;
+                bar.style.height = '0%';
+                setTimeout(() => {
+                    bar.style.transition = 'height 1s ease';
+                    bar.style.height = height;
+                }, 300);
             });
-
-
-            const data = await response.json();
-            const paymentSessionId = data.paymentSessionId;
-            let checkoutOptions = {
-                paymentSessionId: paymentSessionId,
-                redirectTarget: "_self",
-            };
-            await cashfree.checkout(checkoutOptions);
         });
-
     </script>
 </body>
 

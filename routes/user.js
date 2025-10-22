@@ -28,9 +28,7 @@ const Transaction = require("../models/transaction");
 
 app.get("/", auth, async (req, res) => {
   try {
-    const user = await User.findOne({ _id: req.user.id.id }).populate(
-      "totalExpense"
-    );
+    const user = await User.findById(req.user.id.id).populate("totalExpense");
     const incomes = await Transaction.find({
       userId: req.user.id.id,
       type: "income",
@@ -46,8 +44,6 @@ app.get("/", auth, async (req, res) => {
 
     const currentUser = await User.findOne({ _id: req.user.id.id });
     const transactions = await Transaction.find();
-
-    const maxExpense = await Transaction.find().sort({ amount: -1 }).limit(1);
     let yearlyReport = await Transaction.aggregate([
       {
         $match: {
@@ -74,14 +70,14 @@ app.get("/", auth, async (req, res) => {
         },
       },
     ]);
-
-    let overAllMax = yearlyReport[0].overAllMax;
-    let allHeights = yearlyReport[0].months.map((val) => {
-      return {
-        month: val.month,
-        height: (val.amount / overAllMax) * 100 || 0,
-      };
-    });
+    let overAllMax = yearlyReport[0] ? yearlyReport[0].overAllMax : 0;
+    let allHeights =
+      yearlyReport[0]?.months?.map((val) => {
+        return {
+          month: val.month,
+          height: (val.amount / overAllMax) * 100 || 0,
+        };
+      }) || [];
     const monthNames = [
       "Jan",
       "Feb",
@@ -122,7 +118,7 @@ app.get("/", auth, async (req, res) => {
 //transaction page
 app.get("/transactions", auth, async (req, res) => {
   const transactions = await Transaction.find();
-  res.render("transaction",{transactions});
+  res.render("transaction", { transactions });
 });
 
 //daywise page
@@ -142,15 +138,25 @@ app.get("/settings", auth, async (req, res) => {
 
 //add expense/income
 app.post("/add", auth, async (req, res) => {
-  let { val, amount, title ,category,desc } = req.body;
+  let { type, amount, title, category, desc } = req.body;
   const session = await mongoose.startSession();
+  // console.log("Adding transaction:", { val, amount, title, category, desc });
 
   try {
     session.startTransaction();
 
-    if (val === "expense") {
+    if (type === "expense") {
       await Transaction.create(
-        [{ amount, title,category,desc, userId: req.user.id.id, type: "expense" }],
+        [
+          {
+            amount,
+            title,
+            category,
+            desc,
+            userId: req.user.id.id,
+            type: "expense",
+          },
+        ],
         {
           session,
         }
@@ -162,7 +168,16 @@ app.post("/add", auth, async (req, res) => {
       );
     } else {
       await Transaction.create(
-        [{ amount, title, category,desc, userId: req.user.id.id, type: "income" }],
+        [
+          {
+            amount,
+            title,
+            category,
+            desc,
+            userId: req.user.id.id,
+            type: "income",
+          },
+        ],
         {
           session,
         }
@@ -268,6 +283,84 @@ const getUsersWithExpenses = async () => {
     console.error(err);
   }
 };
+
+//filter transaction
+
+app.post("/filter", async (req, res) => {
+  let { filters, page } = req.body;
+  let pageLimit = page[1] || 10;
+  let pageNum = page[0] || 1;
+  pageLimit = parseInt(pageLimit);
+  pageNum = parseInt(pageNum);
+  console.log(filters);
+  let query = {};
+  if (filters.dateRange && filters.dateRange !== "any") {
+    const today = new Date();
+    let start, end;
+    switch (filters.dateRange) {
+      case "today": {
+        start = new Date(today.setHours(0, 0, 0, 0));
+        end = new Date(today.setHours(23, 59, 59, 999));
+        break;
+      }
+      case "this_week": {
+        const curr = new Date();
+        const first = curr.getDate() - curr.getDay();
+        start = new Date(curr.setDate(first));
+        start.setHours(0, 0, 0, 0);
+        end = new Date();
+        break;
+      }
+      case "this_month": {
+        start = new Date(today.getFullYear(), today.getMonth(), 1);
+        end = new Date(
+          today.getFullYear(),
+          today.getMonth() + 1,
+          0,
+          23,
+          59,
+          59,
+          999
+        );
+        break;
+      }
+      default:
+        break;
+    }
+    if (start && end) query.date = { $gte: start, $lte: end };
+  }
+  if (filters.category && filters.category !== "all") {
+    query.category = filters.category;
+  }
+  if (filters.transactionType && filters.transactionType !== "all") {
+    query.type = filters.transactionType;
+  }
+  if (filters.amountRange && filters.amountRange !== "any") {
+    const [min, max] = filters.amountRange.split("_").map(Number);
+    query.amount = { $gte: min, $lte: max };
+  }
+ 
+
+  const totalDocs = await Transaction.countDocuments(query);
+
+  const filteredTransactions = await Transaction.find(query)
+    .skip((pageNum - 1) * pageLimit)
+    .limit(pageLimit);
+
+
+  res.json({
+    success: true,
+    count: totalDocs,
+    data: filteredTransactions,
+  });
+});
+
+//edit expense/income
+app.get('/edit/', auth, async (req, res) => {
+  let expenseId = req.params.id;  
+  let transaction = await Transaction.findById(expenseId);
+  res.render('edit', { transaction });
+});
 
 app.get("/leaderboard", auth, isPremium, async (req, res) => {
   const result = await getUsersWithExpenses();

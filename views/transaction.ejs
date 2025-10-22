@@ -66,66 +66,79 @@
         <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
                 <h3 class="text-lg font-semibold text-gray-800 mb-4 md:mb-0">Filter Transactions</h3>
-                <button class="text-primary hover:text-primary-dark flex items-center">
+                <button onclick="resetFilter(this ,'filterForm')"
+                    class="text-primary hover:text-primary-dark flex items-center">
                     <i class="fas fa-redo-alt mr-2"></i> Reset Filters
                 </button>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <form id="filterForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 items-end">
+
                 <!-- Date Filter -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Date Range</label>
-                    <select
+                    <select name="dateRange"
                         class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
-                        <option>All Time</option>
-                        <option>Today</option>
-                        <option>This Week</option>
-                        <option>This Month</option>
-                        <option>This Year</option>
-                        <option>Custom Range</option>
+                        <option value="all">All Time</option>
+                        <option value="today">Today</option>
+                        <option value="this_week">This Week</option>
+                        <option value="this_month">This Month</option>
+                        <option value="this_year">This Year</option>
+                        <option value="custom">Custom Range</option>
                     </select>
                 </div>
 
-                <!-- Type Filter -->
+                <!-- Transaction Type Filter -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Transaction Type</label>
-                    <select
+                    <select name="transactionType"
                         class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
-                        <option>All Transactions</option>
-                        <option>Income</option>
-                        <option>Expense</option>
-                        <option>Transfer</option>
+                        <option value="all">All Transactions</option>
+                        <option value="income">Income</option>
+                        <option value="expense">Expense</option>
+                        <option value="transfer">Transfer</option>
                     </select>
                 </div>
 
                 <!-- Category Filter -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
-                    <select
+                    <select name="category"
                         class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
-                        <option>All Categories</option>
-                        <option>Food & Dining</option>
-                        <option>Shopping</option>
-                        <option>Transportation</option>
-                        <option>Entertainment</option>
-                        <option>Bills & Utilities</option>
-                        <option>Healthcare</option>
+                        <option value="all">All Categories</option>
+                        <option value="food_dining">Food & Dining</option>
+                        <option value="shopping">Shopping</option>
+                        <option value="transportation">Transportation</option>
+                        <option value="entertainment">Entertainment</option>
+                        <option value="bills_utilities">Bills & Utilities</option>
+                        <option value="healthcare">Healthcare</option>
                     </select>
                 </div>
 
                 <!-- Amount Filter -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Amount Range</label>
-                    <select
+                    <select name="amountRange"
                         class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
-                        <option>Any Amount</option>
-                        <option>Under $50</option>
-                        <option>$50 - $100</option>
-                        <option>$100 - $500</option>
-                        <option>Over $500</option>
+                        <option value="any">Any Amount</option>
+                        <option value="0_50">Under $50</option>
+                        <option value="50_100">$50 - $100</option>
+                        <option value="100_500">$100 - $500</option>
+                        <option value="500_10000000">Over $500</option>
                     </select>
                 </div>
-            </div>
+
+                <!-- Buttons -->
+                <div class="flex flex-col sm:flex-row gap-3 justify-center md:justify-end">
+                    <button type="submit"
+                        class="w-full sm:w-auto px-6 py-2 text-white bg-primary hover:bg-primary-dark rounded-full transition-all">
+                        Apply
+                    </button>
+
+                </div>
+            </form>
+
+
 
         </div>
 
@@ -164,7 +177,7 @@
                                 Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
+                    <tbody id="transactions" class="bg-white divide-y divide-gray-200">
                         <!-- Transaction 1 -->
                         <%transactions?.forEach((trans)=>{%>
                             <tr class="hover:bg-gray-50 transition"></tr>
@@ -185,7 +198,9 @@
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900"><%=trans.category%></div>
+                                <div class="text-sm text-gray-900">
+                                    <%=trans.category%>
+                                </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm text-gray-900">
@@ -221,10 +236,6 @@
                             </tr>
 
                             <% })%>
-
-
-
-
                     </tbody>
                 </table>
             </div>
@@ -232,20 +243,29 @@
             <!-- Pagination -->
             <div class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
                 <div class="text-sm text-gray-700">
-                    Showing <span class="font-medium">1</span> to <span class="font-medium">5</span> of <span
-                        class="font-medium">127</span> transactions
+                    Showing <span id="pageNumber" class="font-medium">1</span> to <span id="totalPages"
+                        class="font-medium">5</span> of <span id="transaction_length" class="font-medium">0</span>
+                    transactions
+                </div>
+                <div class="text-sm text-gray-700">
+                    <select name="pageLimit" id="pageLimit">
+                        <option value="5">5</option>
+                        <option value="10" selected>10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+
+                    </select>
+
                 </div>
                 <div class="flex space-x-2">
-                    <button
-                        class="px-3 py-1 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition">Previous</button>
-                    <button
-                        class="px-3 py-1 rounded-lg bg-primary text-white hover:bg-primary-dark transition">1</button>
-                    <button
-                        class="px-3 py-1 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition">2</button>
-                    <button
-                        class="px-3 py-1 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition">3</button>
-                    <button
-                        class="px-3 py-1 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition">Next</button>
+
+                    <div id="pages" class="flex space-x-2">
+                        <button
+                            class="px-3 py-1 rounded-lg bg-primary text-white hover:bg-primary-dark transition">1</button>
+
+                    </div>
+
+
                 </div>
             </div>
         </div>
@@ -298,17 +318,160 @@
     </footer>
 
     <script>
-        // Simple JavaScript for filter interactions
+
+        // reset filter
+        function resetFilter(ele, id) {
+            document.getElementById(id).reset();
+        }
+
+        //handle Filter
+
+        let CurrentPage = 1;
         document.addEventListener('DOMContentLoaded', function () {
-            // Add active state to filter buttons
-            const filterButtons = document.querySelectorAll('.filter-btn');
-            filterButtons.forEach(button => {
-                button.addEventListener('click', function () {
-                    filterButtons.forEach(btn => btn.classList.remove('bg-primary', 'text-white'));
-                    this.classList.add('bg-primary', 'text-white');
+
+            const form = document.getElementById("filterForm");
+            const PageLimit = document.getElementById("pageLimit");
+            const paginationDiv = document.getElementById("pages");
+
+            async function fetchResults(filters = defaultFilters, page = [1, PageLimit.value]) {
+                currentPage = page[0];
+                // event.preventDefault();
+                // const formData = new FormData(form);
+                // const filters = Object.fromEntries(formData.entries());
+                // console.log("Applied Filters:", filters);
+                let data = await fetch('/filter', {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ filters, page }),
+                })
+                res = await data.json();
+                console.log(data)
+                document.getElementById('transactions').innerHTML = "";
+                res?.data?.forEach((trans) => {
+                    document.getElementById('transactions').innerHTML += `
+                        <tr class="hover:bg-gray-50 transition">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div
+                                        class="flex-shrink-0 h-10 w-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-shopping-bag text-success"></i>
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="text-sm font-medium text-gray-900">
+                                            ${trans.title}
+                                        </div>
+                                        <div class="text-sm text-gray-500">
+                                            ${trans.desc}
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">
+                                    ${trans.category}
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">
+                                    ${trans.date}
+                                </div>
+                                <div class="text-sm text-gray-500">10:24 AM</div>
+                            </td>
+
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                 <div class="text-sm font-medium ${trans.type === 'expense' ? 'text-danger' : 'text-success'}">
+                                     ${trans.type === 'expense' ? '-' : '+'}$${trans.amount}
+                                 </div>
+
+                            </td>
+                            <td  class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <div class="flex space-x-2">
+                                    <button  class="editBtn text-primary hover:text-primary-dark">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="text-danger hover:text-red-700">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <button class="text-gray-500 hover:text-gray-700">
+                                        <i class="fas fa-flag"></i>
+                                    </button>
+                                </div>
+                            </td>
+                            </tr>`
+
+
                 });
+                document.querySelectorAll('.editBtn').forEach((btn) => {
+                    btn.addEventListener('click', (e) => {
+                        let id = e.target;
+                        edit(e.target, id);
+                    });
+
+                });
+                console.log(data);
+                //total transactions 
+
+                document.getElementById('transaction_length').innerText = res?.count || 0;
+
+
+                let pageCountOnPage = 10;
+                let pages = document.getElementById('pages');
+                let pageLength = Math.ceil(Number(Number(res?.count) / Number(PageLimit.value)));
+                pages.innerHTML = '';
+                console.log(pageLength)
+
+                const prev = document.createElement("button");
+                prev.textContent = "Prev";
+                prev.disabled = currentPage === 1;
+                prev.className = "px-3 py-1 rounded-lg bg-primary-dark text-white hover:bg-primary-dark transition";
+                prev.addEventListener("click", () => {
+                    if (currentPage > 1) fetchResults(defaultFilters, [currentPage - 1, pageLimit.value]);
+                });
+                paginationDiv.appendChild(prev);
+
+                for (let i = 0; i < pageLength; i++) {
+
+                    const btn = document.createElement("button");
+                    btn.textContent = i + 1;
+                    btn.className = "px-3 py-1 rounded-lg bg-primary text-white hover:bg-primary-dark transition";
+
+                    btn.addEventListener("click", () => {
+                        fetchResults(filters, [i + 1, pageLimit.value]);
+                    });
+
+                    pages.appendChild(btn);
+
+                }
+                const next = document.createElement("button");
+                next.textContent = "Next";
+                next.disabled = currentPage === pageLength;
+                next.addEventListener("click", () => {
+                    if (currentPage < pageLength) fetchResults(defaultFilters, [currentPage + 1, pageLimit.value]);
+                });
+                next.className = "px-3 py-1 rounded-lg bg-primary-dark text-white hover:bg-primary-dark transition";
+                paginationDiv.appendChild(next);
+
+                //total pages and current page
+                document.getElementById('pageNumber').innerText = currentPage;
+                document.getElementById('totalPages').innerText = pageLength;
+
+            }
+
+
+
+            form.addEventListener("submit", (e) => {
+                e.preventDefault();
+                const formData = new FormData(form);
+                const filters = Object.fromEntries(formData.entries());
+
+                fetchResults(filters);
             });
 
+
+            const defaultFilters = Object.fromEntries(new FormData(form).entries());
+            fetchResults(defaultFilters);
             // Simple search functionality
             const searchInput = document.querySelector('input[type="text"]');
             searchInput.addEventListener('input', function () {
@@ -325,6 +488,10 @@
                 });
             });
         });
+        function edit(ele, id) {
+            // id = JSON.stringify(id);
+            window.location.href = `/edit/${id}`;
+        }
     </script>
 </body>
 

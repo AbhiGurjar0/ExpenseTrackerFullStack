@@ -394,9 +394,41 @@ app.get("/leaderboard", auth, isPremium, async (req, res) => {
   res.render("leaderboard", { user: req.user, users: result });
 });
 
+//daily transaction
+app.post("/api/transactions", auth, async (req, res) => {
+  let { date } = req.body;
+  date = new Date(date);
+  console.log("Request body:", new Date(date));
+  let transactions = await Transaction.find({
+    date: {
+      $gte: new Date(date.setHours(0, 0, 0, 0)),
+      $lt: new Date(date.setHours(23, 59, 59, 999)),
+    },
+    userId: req.user.id.id,
+  });
+  let totalIncome = 0;
+  let totalExpense = 0;
+  let netAmount = 0;
+  let transLength = 0;
+  transactions.forEach((t) => {
+    if (t.type == "income") totalIncome += Number(t.amount);
+    else totalExpense += Number(t.amount);
+  });
+  netAmount = totalIncome - totalExpense;
+  transLength = transactions.length;
+
+  res.json({
+    message: "Success",
+    transactions,
+    totalIncome,
+    totalExpense,
+    netAmount,
+    transLength,
+  });
+});
 //delete expense/income
 app.post("/delete/:id", auth, async (req, res) => {
-  const id = req.params.id;
+  const { id } = req.params.id;
   try {
     const transaction = await Transaction.findByIdAndDelete(id);
     const amountToDecrement =

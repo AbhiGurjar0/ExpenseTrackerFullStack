@@ -29,26 +29,9 @@
 
 <body class="bg-gray-50 min-h-screen">
     <!-- Header -->
-    <header class="bg-white shadow-sm sticky top-0 z-10">
-        <div class="container mx-auto px-4 py-4">
-            <div class="flex justify-between items-center">
-                <div class="flex items-center space-x-2">
-                    <i class="fas fa-chart-pie text-primary text-xl"></i>
-                    <h1 class="text-xl font-bold text-gray-800">ExpenseTracker</h1>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <button
-                        class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition flex items-center">
-                        <i class="fas fa-plus mr-2"></i> Add Transaction
-                    </button>
-                    <div
-                        class="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-bold">
-                        JD
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
+   <div>
+        <%- include('partials/navbar',{user:""}) %>
+       </div>
 
     <!-- Main Content -->
     <div class="container mx-auto px-4 py-8">

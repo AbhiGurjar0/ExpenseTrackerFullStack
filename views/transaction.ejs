@@ -26,26 +26,9 @@
 
 <body class="bg-gray-50 min-h-screen">
     <!-- Header -->
-    <header class="bg-white shadow-sm">
-        <div class="container mx-auto px-4 py-4">
-            <div class="flex justify-between items-center">
-                <div class="flex items-center space-x-2">
-                    <i class="fas fa-chart-pie text-primary text-xl"></i>
-                    <h1 class="text-xl font-bold text-gray-800">ExpenseTracker</h1>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <button
-                        class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition flex items-center">
-                        <i class="fas fa-plus mr-2"></i> Add Transaction
-                    </button>
-                    <div
-                        class="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-bold">
-                        JD
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
+  <div>
+        <%- include('partials/navbar',{user:""}) %>
+       </div>
 
     <!-- Main Content -->
     <div class="container mx-auto px-4 py-8">
@@ -350,66 +333,79 @@
                 console.log(data)
                 document.getElementById('transactions').innerHTML = "";
                 res?.data?.forEach((trans) => {
-                    document.getElementById('transactions').innerHTML += `
-                        <tr class="hover:bg-gray-50 transition">
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <div
-                                        class="flex-shrink-0 h-10 w-10 bg-green-100 rounded-lg flex items-center justify-center">
-                                        <i class="fas fa-shopping-bag text-success"></i>
+                    // document.getElementById('transactions').innerHTML += `
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-gray-50 transition";
+                    tr.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-shopping-bag text-success"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900">
+                                        ${trans.title}
                                     </div>
-                                    <div class="ml-4">
-                                        <div class="text-sm font-medium text-gray-900">
-                                            ${trans.title}
-                                        </div>
-                                        <div class="text-sm text-gray-500">
-                                            ${trans.desc}
-                                        </div>
+                                    <div class="text-sm text-gray-500">
+                                        ${trans.desc}
                                     </div>
                                 </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">
-                                    ${trans.category}
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">
-                                    ${trans.date}
-                                </div>
-                                <div class="text-sm text-gray-500">10:24 AM</div>
-                            </td>
+                            </div>
+        </td >
+        <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm text-gray-900">
+                ${trans.category}
+            </div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm text-gray-900">
+                ${trans.date}
+            </div>
+            <div class="text-sm text-gray-500">10:24 AM</div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm font-medium ${trans.type === 'expense' ? 'text-danger' : 'text-success'}">
+                ${trans.type === 'expense' ? '-' : '+'}$${trans.amount}
+            </div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+            <div class="flex space-x-2">
+                <button class="editBtn text-primary hover:text-primary-dark">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="deleteBtn text-danger hover:text-red-700">
+                    <i class="fas fa-trash"></i>
+                </button>
+                <button class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-flag"></i>
+                </button>
+            </div>
+        </td>
+                    `;
 
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                 <div class="text-sm font-medium ${trans.type === 'expense' ? 'text-danger' : 'text-success'}">
-                                     ${trans.type === 'expense' ? '-' : '+'}$${trans.amount}
-                                 </div>
 
-                            </td>
-                            <td  class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                <div class="flex space-x-2">
-                                    <button  class="editBtn text-primary hover:text-primary-dark">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="text-danger hover:text-red-700">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                    <button class="text-gray-500 hover:text-gray-700">
-                                        <i class="fas fa-flag"></i>
-                                    </button>
-                                </div>
-                            </td>
-                            </tr>`
-
-
-                });
-                document.querySelectorAll('.editBtn').forEach((btn) => {
-                    btn.addEventListener('click', (e) => {
-                        let id = e.target;
-                        edit(e.target, id);
+                    tr.querySelector('.editBtn').addEventListener('click', () => {
+                        console.log('edit clicked', trans._id);
+                        edit(trans._id.toString())
                     });
 
+                    tr.querySelector('.deleteBtn').addEventListener('click', () => {
+                        deleteTransaction(trans._id)
+                    });
+
+
+
+                    document.getElementById('transactions').appendChild(tr);
+
+
                 });
+                // document.querySelectorAll('.editBtn').forEach((btn) => {
+                //     btn.addEventListener('click', (e) => {
+                //         let id = e.target;
+                //         edit(e.target, id);
+                //     });
+
+                // });
                 console.log(data);
                 //total transactions 
 
@@ -488,10 +484,31 @@
                 });
             });
         });
-        function edit(ele, id) {
-            // id = JSON.stringify(id);
+
+
+        function edit(id) {
+            console.log('Editing transaction with ID:', id);
             window.location.href = `/edit/${id}`;
         }
+        function deleteTransaction(id) {
+            console.log('Deleting transaction with ID:', id);
+            // Implement delete functionality here
+            fetch(`/delete/${id}`, {
+                method: 'POST',
+                headers:{
+                    'Content-Type':'application/json'
+                }
+            }).then(response => {
+                if (response.ok) {
+                    alert('Transaction deleted successfully');
+                    location.reload();
+                } else {
+                    alert('Failed to delete transaction');
+                }
+            });
+        }
+
+
     </script>
 </body>
 

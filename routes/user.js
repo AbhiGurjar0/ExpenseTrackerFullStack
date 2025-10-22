@@ -21,6 +21,7 @@ const isPremium = require("../controllers/isPremium");
 const payment = require("../models/payment");
 const mongoose = require("mongoose");
 const Transaction = require("../models/transaction");
+const transaction = require("../models/transaction");
 // const { count } = require("console");
 // const { height } = require("pdfkit/js/page");
 
@@ -43,7 +44,7 @@ app.get("/", auth, async (req, res) => {
     const balance = totalIncome - totalExpense;
 
     const currentUser = await User.findOne({ _id: req.user.id.id });
-    const transactions = await Transaction.find();
+    const transactions = await Transaction.find().sort({ date: -1 }).limit(5);
     let yearlyReport = await Transaction.aggregate([
       {
         $match: {
@@ -285,14 +286,13 @@ const getUsersWithExpenses = async () => {
 };
 
 //filter transaction
-
 app.post("/filter", async (req, res) => {
   let { filters, page } = req.body;
   let pageLimit = page[1] || 10;
   let pageNum = page[0] || 1;
   pageLimit = parseInt(pageLimit);
   pageNum = parseInt(pageNum);
-  console.log(filters);
+
   let query = {};
   if (filters.dateRange && filters.dateRange !== "any") {
     const today = new Date();
@@ -339,14 +339,13 @@ app.post("/filter", async (req, res) => {
     const [min, max] = filters.amountRange.split("_").map(Number);
     query.amount = { $gte: min, $lte: max };
   }
- 
 
   const totalDocs = await Transaction.countDocuments(query);
 
   const filteredTransactions = await Transaction.find(query)
     .skip((pageNum - 1) * pageLimit)
-    .limit(pageLimit);
-
+    .limit(pageLimit)
+    .sort({ date: -1 });
 
   res.json({
     success: true,
@@ -355,33 +354,58 @@ app.post("/filter", async (req, res) => {
   });
 });
 
-//edit expense/income
-app.get('/edit/', auth, async (req, res) => {
-  let expenseId = req.params.id;  
+//edit expense/income page
+app.get("/edit/:id", auth, async (req, res) => {
+  let expenseId = req.params.id;
   let transaction = await Transaction.findById(expenseId);
-  res.render('edit', { transaction });
+  res.render("edit", { transaction });
+});
+// edit expense/income
+app.post("/update/:id", auth, async (req, res) => {
+  let { amount, date, type, category, desc, title } = req.body;
+  let transaction = await Transaction.findById(req.params.id);
+  let expChange = amount - transaction.amount;
+  await Transaction.findByIdAndUpdate(
+    req.params.id,
+    {
+      type,
+      amount,
+      category,
+      desc,
+      title,
+      date,
+    },
+    {
+      new: true,
+    }
+  );
+  if (transaction.type == "expense") {
+    await User.findByIdAndUpdate(req.user.id.id, {
+      $inc: { totalExpense: expChange },
+    });
+  }
+  res.redirect("/transactions");
 });
 
+//leaderboard
 app.get("/leaderboard", auth, isPremium, async (req, res) => {
   const result = await getUsersWithExpenses();
   result.sort((a, b) => b.totalExpense - a.totalExpense);
   res.render("leaderboard", { user: req.user, users: result });
 });
 
+//delete expense/income
 app.post("/delete/:id", auth, async (req, res) => {
   const id = req.params.id;
   try {
-    const exp = await expense.findOne({
-      where: { id, userId: req.user.id.id },
+    const transaction = await Transaction.findByIdAndDelete(id);
+    const amountToDecrement =
+      transaction && transaction.amount ? transaction.amount : 0;
+
+    await User.findByIdAndUpdate(req.user.id.id, {
+      $inc: { totalExpense: -amountToDecrement },
     });
-    const amountToDecrement = exp && exp.amount ? exp.amount : 0;
-    await expense.destroy({ where: { id, userId: req.user.id.id } });
-    await Income.destroy({ where: { id, userId: req.user.id.id } });
-    await User.decrement(
-      { totalExpense: amountToDecrement },
-      { where: { id: req.user.id.id } }
-    );
-    // await User.save();
+
     res.status(200).json({ message: "Item deleted successfully" });
   } catch (error) {
     console.error("Error deleting item", error);

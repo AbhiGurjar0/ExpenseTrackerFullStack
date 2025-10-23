@@ -23,6 +23,7 @@ const mongoose = require("mongoose");
 const Transaction = require("../models/transaction");
 const transaction = require("../models/transaction");
 const { count } = require("console");
+const { totalmem } = require("os");
 // const { count } = require("console");
 // const { height } = require("pdfkit/js/page");
 
@@ -45,7 +46,9 @@ app.get("/", auth, async (req, res) => {
     const balance = totalIncome - totalExpense;
 
     const currentUser = await User.findOne({ _id: req.user.id.id });
-    const transactions = await Transaction.find({userId:req.user.id.id}).sort({ date: -1 }).limit(5);
+    const transactions = await Transaction.find({ userId: req.user.id.id })
+      .sort({ date: -1 })
+      .limit(5);
     let yearlyReport = await Transaction.aggregate([
       {
         $match: {
@@ -120,22 +123,34 @@ app.get("/", auth, async (req, res) => {
 //transaction page
 app.get("/transactions", auth, async (req, res) => {
   const transactions = await Transaction.find();
-  res.render("transaction", { transactions });
+  let user = await User.findById(req.user.id.id);
+  res.render("transaction", { transactions, user });
 });
 
 //daywise page
-app.get("/dayWise", auth, async (req, res) => {
-  res.render("dayWise");
+app.get("/dayWise", auth, isPremium, async (req, res) => {
+  let user = await User.findById(req.user.id.id);
+  res.render("dayWise", { user });
 });
 
 //leaderboard page
 app.get("/leaderboard2", auth, async (req, res) => {
-  res.render("leaderboard2");
+  let user = await User.findById(req.user.id.id);
+  res.render("leaderboard2", { user });
 });
 
 //settings page
 app.get("/settings", auth, async (req, res) => {
-  res.render("settings");
+  let user = await User.findById(req.user.id.id);
+  let Incomes = await Transaction.find({
+    userId: req.user.id.id,
+    type: "income",
+  });
+
+  let totalIncome = 0;
+  Incomes.forEach((inc) => (totalIncome += Number(inc.amount)));
+
+  res.render("settings", { user, totalIncome });
 });
 
 //add expense/income
@@ -267,7 +282,7 @@ app.post("/reset-password", async (req, res) => {
 });
 
 //filter transaction
-app.post("/filter",auth,  async (req, res) => {
+app.post("/filter", auth, async (req, res) => {
   let { filters, page } = req.body;
   let pageLimit = page[1] || 10;
   let pageNum = page[0] || 1;
@@ -427,7 +442,7 @@ app.post("/leaderboard/data", auth, async (req, res) => {
       $addFields: {
         savingRate: {
           $cond: [
-            { $eq: ["$totalIncome", 0] }, 
+            { $eq: ["$totalIncome", 0] },
             0,
             {
               $divide: [
@@ -450,7 +465,6 @@ app.post("/leaderboard/data", auth, async (req, res) => {
       $limit: pageLimit,
     },
   ]);
-
 
   const totalUsers = await Transaction.aggregate([
     { $match: { date: { $gte: startOfYear, $lt: endOfYear } } },

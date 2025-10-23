@@ -7,6 +7,19 @@
     <title>Expense Tracker - Transactions</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --light: #f8f9fa;
+            --dark: #4338ca;
+            --gray: #6c757d;
+            --light:#e9ecef;
+        }
+    </style>
     <script>
         tailwind.config = {
             theme: {
@@ -26,9 +39,9 @@
 
 <body class="bg-gray-50 min-h-screen">
     <!-- Header -->
-  <div>
-        <%- include('partials/navbar',{user:""}) %>
-       </div>
+    <div>
+        <%- include('partials/navbar',{user:user}) %>
+    </div>
 
     <!-- Main Content -->
     <div class="container mx-auto px-4 py-8">
@@ -495,8 +508,8 @@
             // Implement delete functionality here
             fetch(`/delete/${id}`, {
                 method: 'POST',
-                headers:{
-                    'Content-Type':'application/json'
+                headers: {
+                    'Content-Type': 'application/json'
                 }
             }).then(response => {
                 if (response.ok) {

@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Expense.IO Sidebar</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
 </head>
 
 <body class="bg-gray-50 font-sans">
@@ -18,26 +19,67 @@
                 </div>
                 <div class="flex items-center space-x-4">
                     <div class="md:flex space-x-6">
-                        <a href="/"
-                            class="text-gray-700 hover:text-indigo-600 transition duration-200">Dashboard</a>
+                        <a href="/" class="text-gray-700 hover:text-indigo-600 transition duration-200">Dashboard</a>
                         <a href="/transactions"
                             class="text-gray-700 hover:text-indigo-600 transition duration-200">Transations</a>
-                        <a href="/dayWise" class="text-gray-700 hover:text-indigo-600 transition duration-200">Daily</a>
-                        <a href="/leaderboard2"
-                            class="text-gray-700 hover:text-indigo-600 transition duration-200">leaderboard</a>
-                        <a href="/settings"
-                            class="text-gray-700 hover:text-indigo-600 transition duration-200">Settings</a>
+                        <%if(!(user.isPremium)){%>
+                            <div onclick="alert('Only for Premium User')"
+                                class="cursor-pointer text-gray-700 hover:text-indigo-600 transition duration-200">
+                                Daily</div>
+                            <%}else{%>
+
+                                <a href="/dayWise"
+                                    class="text-gray-700 hover:text-indigo-600 transition duration-200">Daily</a>
+                                <% }%>
+                                    <%if(!(user.isPremium)){%>
+                                        <div onclick="alert('Only for Premium User')"
+                                            class="cursor-pointer text-gray-700 hover:text-indigo-600 transition duration-200">
+                                            leaderboard</div>
+
+                                        <%}else{%>
+                                            <a href="/leaderboard2"
+                                                class="text-gray-700 hover:text-indigo-600 transition duration-200">leaderboard</a>
+                                            <% }%>
+                                                <a href="/settings"
+                                                    class="text-gray-700 hover:text-indigo-600 transition duration-200">Settings</a>
                     </div>
 
                     <div
-                        class="w-10 h-10  bg-[--dark] rounded-full flex items-center justify-center text-white font-bold">
+                        class="w-10 h-10 bg-[--dark] rounded-full flex items-center justify-center text-white font-bold">
                         <%=user?.userName?.substr(0,2)%>
                     </div>
+                    <% if(!(user.isPremium)){%>
+                        <div id="renderBtn"
+                            class="w-24 h-10 cursor-pointer  bg-[--dark] rounded-lg flex items-center justify-center text-white font-bold">
+                            Upgrage
+                        </div>
+
+                        <%}%>
+
 
                 </div>
             </div>
         </div>
     </header>
 </body>
+<script>
+    const cashfree = Cashfree({ mode: "sandbox" });
+    document.getElementById("renderBtn").addEventListener("click", async () => {
+        console.log("clicked")
+        let response = await fetch("http://localhost:3000/pay", {
+
+            method: "POST",
+
+        });
+        response = await response.json();
+
+
+
+        await cashfree.checkout({
+            paymentSessionId: response.paymentSessionId,
+            redirectTarget: "_self",
+        });
+    });
+</script>
 
 </html>

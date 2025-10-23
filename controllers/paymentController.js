@@ -33,11 +33,12 @@ exports.processPayment = async (req, res) => {
 };
 
 exports.getPaymentStatus = async (req, res) => {
-  const { orderId } = req.params;
+  const { orderId}  = req.params;
 
   try {
     const status = await getPaymentStatus(orderId);
-    await Payment.findByIdAndUpdate(orderId, { paymentStatus: status });
+    console.log(status);
+    await Payment.findOneAndUpdate({orderId:orderId}, { paymentStatus: status });
     if (status === "Success") {
       const user = await User.findById(req.user.id.id);
       user.isPremium = true;

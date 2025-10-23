@@ -22,6 +22,7 @@ const payment = require("../models/payment");
 const mongoose = require("mongoose");
 const Transaction = require("../models/transaction");
 const transaction = require("../models/transaction");
+const { count } = require("console");
 // const { count } = require("console");
 // const { height } = require("pdfkit/js/page");
 
@@ -44,7 +45,7 @@ app.get("/", auth, async (req, res) => {
     const balance = totalIncome - totalExpense;
 
     const currentUser = await User.findOne({ _id: req.user.id.id });
-    const transactions = await Transaction.find().sort({ date: -1 }).limit(5);
+    const transactions = await Transaction.find({userId:req.user.id.id}).sort({ date: -1 }).limit(5);
     let yearlyReport = await Transaction.aggregate([
       {
         $match: {
@@ -265,28 +266,8 @@ app.post("/reset-password", async (req, res) => {
   }
 });
 
-const getUsersWithExpenses = async () => {
-  try {
-    const expenses = await user.findAll({
-      attributes: ["userName", "totalExpense"],
-      where: {
-        isPremium: true,
-        totalExpense: { [Op.not]: null },
-      },
-      group: ["id"],
-    });
-
-    return expenses.map((exp) => ({
-      userName: exp.userName,
-      totalExpense: exp.totalExpense,
-    }));
-  } catch (err) {
-    console.error(err);
-  }
-};
-
 //filter transaction
-app.post("/filter", async (req, res) => {
+app.post("/filter",auth,  async (req, res) => {
   let { filters, page } = req.body;
   let pageLimit = page[1] || 10;
   let pageNum = page[0] || 1;
@@ -294,6 +275,7 @@ app.post("/filter", async (req, res) => {
   pageNum = parseInt(pageNum);
 
   let query = {};
+  query.userId = req.user.id.id;
   if (filters.dateRange && filters.dateRange !== "any") {
     const today = new Date();
     let start, end;
@@ -388,10 +370,102 @@ app.post("/update/:id", auth, async (req, res) => {
 });
 
 //leaderboard
-app.get("/leaderboard", auth, isPremium, async (req, res) => {
-  const result = await getUsersWithExpenses();
-  result.sort((a, b) => b.totalExpense - a.totalExpense);
-  res.render("leaderboard", { user: req.user, users: result });
+app.post("/leaderboard/data", auth, async (req, res) => {
+  console.log("Leaderboard data request received");
+  let { page } = req.body;
+  let pageLimit = page[1] || 10;
+  let pageNum = page[0] || 1;
+  pageLimit = parseInt(pageLimit);
+  pageNum = parseInt(pageNum);
+
+  const startOfYear = new Date(new Date().getFullYear(), 0, 1);
+  const endOfYear = new Date(new Date().getFullYear() + 1, 0, 1);
+
+  const result = await Transaction.aggregate([
+    // 1️⃣ Match current year's transactions
+    {
+      $match: {
+        date: { $gte: startOfYear, $lt: endOfYear },
+      },
+    },
+    // 2️⃣ Group by userId to get totals
+    {
+      $group: {
+        _id: "$userId",
+
+        totalExpense: {
+          $sum: {
+            $cond: [{ $eq: ["$type", "expense"] }, { $toDouble: "$amount" }, 0],
+          },
+        },
+        totalIncome: {
+          $sum: {
+            $cond: [{ $eq: ["$type", "income"] }, { $toDouble: "$amount" }, 0],
+          },
+        },
+      },
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "_id",
+        foreignField: "_id",
+        as: "userDetails",
+      },
+    },
+    { $unwind: "$userDetails" },
+    {
+      $project: {
+        _id: 0,
+        userId: "$_id",
+        userName: "$userDetails.userName", // matches your User schema
+        totalExpense: 1,
+        totalIncome: 1,
+      },
+    },
+    {
+      $addFields: {
+        savingRate: {
+          $cond: [
+            { $eq: ["$totalIncome", 0] }, 
+            0,
+            {
+              $divide: [
+                { $subtract: ["$totalIncome", "$totalExpense"] },
+                "$totalIncome",
+              ],
+            },
+          ],
+        },
+      },
+    },
+    // 6️⃣ Sort by saving rate descending
+    {
+      $sort: { savingRate: -1 },
+    },
+    {
+      $skip: (pageNum - 1) * pageLimit,
+    },
+    {
+      $limit: pageLimit,
+    },
+  ]);
+
+
+  const totalUsers = await Transaction.aggregate([
+    { $match: { date: { $gte: startOfYear, $lt: endOfYear } } },
+    { $group: { _id: "$userId" } }, // group by userId
+    { $count: "total" }, // count unique users
+  ]);
+
+  const totalCount = totalUsers[0] ? totalUsers[0].total : 0;
+
+  res.json({
+    user: req.user,
+    count: totalCount,
+    users: result,
+    startRank: (pageNum - 1) * pageLimit,
+  });
 });
 
 //daily transaction
@@ -428,7 +502,8 @@ app.post("/api/transactions", auth, async (req, res) => {
 });
 //delete expense/income
 app.post("/delete/:id", auth, async (req, res) => {
-  const { id } = req.params.id;
+  console.log("Delete request for ID:", req.params.id);
+  const id = req.params.id;
   try {
     const transaction = await Transaction.findByIdAndDelete(id);
     const amountToDecrement =

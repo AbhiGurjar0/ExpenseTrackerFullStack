@@ -1,11 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Expense Tracker - Leaderboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .active-filter {
+            background-color: #4f46e5;
+            color: white;
+        }
+    </style>
     <script>
         tailwind.config = {
             theme: {
@@ -26,11 +33,12 @@
         }
     </script>
 </head>
+
 <body class="bg-gray-50 min-h-screen">
     <!-- Header -->
-   <div>
+    <div>
         <%- include('partials/navbar',{user:""}) %>
-       </div>
+    </div>
 
     <!-- Main Content -->
     <div class="container mx-auto px-4 py-8">
@@ -43,75 +51,25 @@
             <div class="mt-4 md:mt-0 flex items-center space-x-3">
                 <div class="relative">
                     <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-                    <input type="text" id="search-input" placeholder="Search users..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-64">
+                    <input type="text" id="search-input" placeholder="Search users..."
+                        class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-64">
                 </div>
-                <button id="refresh-btn" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition flex items-center">
+                <button id="refresh-btn"
+                    class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition flex items-center">
                     <i class="fas fa-redo-alt mr-2"></i> Refresh
                 </button>
             </div>
         </div>
 
-        <!-- Filters and Stats -->
-        
 
-        <!-- Leaderboard Stats -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl shadow-sm p-6">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <p class="text-cyan-100 text-sm">Top Saver This Month</p>
-                        <h3 class="text-2xl font-bold mt-1">Sarah Johnson</h3>
-                        <p class="text-cyan-100 mt-2">Saved 45% of income</p>
-                    </div>
-                    <div class="bg-white bg-opacity-20 p-3 rounded-lg">
-                        <i class="fas fa-trophy text-xl"></i>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl shadow-sm p-6">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <p class="text-purple-100 text-sm">Most Improved</p>
-                        <h3 class="text-2xl font-bold mt-1">Mike Chen</h3>
-                        <p class="text-purple-100 mt-2">+22% from last month</p>
-                    </div>
-                    <div class="bg-white bg-opacity-20 p-3 rounded-lg">
-                        <i class="fas fa-chart-line text-xl"></i>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl shadow-sm p-6">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <p class="text-amber-100 text-sm">Consistency King</p>
-                        <h3 class="text-2xl font-bold mt-1">Emma Wilson</h3>
-                        <p class="text-amber-100 mt-2">6 months streak</p>
-                    </div>
-                    <div class="bg-white bg-opacity-20 p-3 rounded-lg">
-                        <i class="fas fa-fire text-xl"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <!-- Leaderboard Table -->
         <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-8">
             <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
                 <h3 class="text-lg font-semibold text-gray-800">Top Savers Leaderboard</h3>
                 <div class="flex items-center space-x-4">
-                    <div class="text-sm text-gray-600">
-                        Showing <span id="start-index">1</span>-<span id="end-index">10</span> of <span id="total-users">127</span> users
-                    </div>
-                    <div class="flex space-x-2">
-                        <button id="export-btn" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-lg text-sm transition flex items-center">
-                            <i class="fas fa-download mr-2"></i> Export
-                        </button>
-                        <button id="share-btn" class="bg-primary hover:bg-primary-dark text-white px-3 py-1 rounded-lg text-sm transition flex items-center">
-                            <i class="fas fa-share-alt mr-2"></i> Share
-                        </button>
-                    </div>
+
+
                 </div>
             </div>
 
@@ -119,14 +77,21 @@
                 <table class="w-full">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rank</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Savings Rate</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monthly Income</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monthly Expenses</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Savings</th>
-                           
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Rank</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                User</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Savings Rate</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Yearly Income</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Yearly Expenses</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Savings</th>
+
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Actions</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200" id="leaderboard-body">
@@ -138,31 +103,21 @@
             <!-- Pagination -->
             <div class="px-6 py-4 border-t border-gray-200 flex flex-col md:flex-row items-center justify-between">
                 <div class="text-sm text-gray-700 mb-4 md:mb-0">
-                    Showing <span id="page-start">1</span> to <span id="page-end">10</span> of <span id="total-items">127</span> results
+                    Showing <span id="pageNumber">1</span> to <span id="totalPages">10</span> of <span
+                        id="total_length">127</span> results
                 </div>
-                <div class="flex items-center space-x-2">
-                    <button id="first-page" class="px-3 py-1 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition">
-                        <i class="fas fa-angle-double-left"></i>
-                    </button>
-                    <button id="prev-page" class="px-3 py-1 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition">
-                        <i class="fas fa-angle-left"></i>
-                    </button>
-                    
-                    <div class="flex space-x-1" id="pagination-numbers">
-                        <!-- Page numbers will be populated by JavaScript -->
-                    </div>
-                    
-                    <button id="next-page" class="px-3 py-1 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition">
-                        <i class="fas fa-angle-right"></i>
-                    </button>
-                    <button id="last-page" class="px-3 py-1 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition">
-                        <i class="fas fa-angle-double-right"></i>
-                    </button>
+                <div id="pages" class="flex items-center space-x-2">
+
+
+
+
+
                 </div>
                 <div class="mt-4 md:mt-0 flex items-center space-x-2">
                     <span class="text-sm text-gray-700">Rows per page:</span>
-                    <select id="page-size" class="border border-gray-300 rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-primary">
-                        <option value="10">10</option>
+                    <select id="page-size"
+                        class="border border-gray-300 rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-primary">
+                        <option value="1">1</option>
                         <option value="20">20</option>
                         <option value="50">50</option>
                     </select>
@@ -174,40 +129,30 @@
         <div class="bg-gradient-to-r from-primary to-primary-dark text-white rounded-xl shadow-sm p-6">
             <div class="flex flex-col md:flex-row justify-between items-center">
                 <div class="flex items-center mb-4 md:mb-0">
-                    <div class="text-3xl font-bold mr-4">#24</div>
+                    <div id="myRank" class="text-3xl font-bold mr-4">#2</div>
                     <div>
                         <h3 class="text-xl font-bold">Your Current Ranking</h3>
-                        <p class="text-primary-100">You're in the top 19% of savers</p>
+
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
                     <div class="text-center">
-                        <div class="text-2xl font-bold">38%</div>
+                        <div id="mySavingRate" class="text-2xl font-bold">38%</div>
                         <div class="text-primary-100 text-sm">Savings Rate</div>
                     </div>
                     <div class="h-10 w-px bg-white bg-opacity-30"></div>
                     <div class="text-center">
-                        <div class="text-2xl font-bold">+5</div>
-                        <div class="text-primary-100 text-sm">Positions gained</div>
+                        <div id="myIncome" class="text-2xl font-bold"></div>
+                        <div class="text-primary-100 text-sm">TotalIcome</div>
                     </div>
                     <div class="h-10 w-px bg-white bg-opacity-30"></div>
                     <div class="text-center">
-                        <div class="text-2xl font-bold">12</div>
-                        <div class="text-primary-100 text-sm">Weeks active</div>
+                        <div id="myExpense" class="text-2xl font-bold">12</div>
+                        <div class="text-primary-100 text-sm">TotalExpense</div>
                     </div>
                 </div>
             </div>
-            <div class="mt-6 pt-6 border-t border-white border-opacity-20">
-                <div class="flex justify-between items-center">
-                    <div>
-                        <h4 class="font-medium">Next Milestone</h4>
-                        <p class="text-primary-100 text-sm">Reach top 20 to unlock Silver Badge</p>
-                    </div>
-                    <button class="bg-white text-primary px-4 py-2 rounded-lg hover:bg-gray-100 transition font-medium">
-                        View Tips to Improve
-                    </button>
-                </div>
-            </div>
+            
         </div>
     </div>
 
@@ -240,10 +185,12 @@
                 <div>
                     <h4 class="text-md font-semibold mb-4">Get the App</h4>
                     <div class="flex flex-col space-y-2">
-                        <button class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition flex items-center justify-center">
+                        <button
+                            class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition flex items-center justify-center">
                             <i class="fab fa-apple mr-2"></i> App Store
                         </button>
-                        <button class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition flex items-center justify-center">
+                        <button
+                            class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition flex items-center justify-center">
                             <i class="fab fa-google-play mr-2"></i> Google Play
                         </button>
                     </div>
@@ -256,45 +203,6 @@
     </footer>
 
     <script>
-        // Sample leaderboard data
-        const leaderboardData = [
-            { id: 1, name: "Sarah Johnson", avatar: "SJ", savingsRate: 45, monthlyIncome: 5200, monthlyExpenses: 2860, savings: 2340, trend: "up", region: "north", ageGroup: "26-35", category: "savings" },
-            { id: 2, name: "Mike Chen", avatar: "MC", savingsRate: 42, monthlyIncome: 6800, monthlyExpenses: 3944, savings: 2856, trend: "up", region: "asia", ageGroup: "26-35", category: "savings" },
-            { id: 3, name: "Emma Wilson", avatar: "EW", savingsRate: 40, monthlyIncome: 4500, monthlyExpenses: 2700, savings: 1800, trend: "steady", region: "europe", ageGroup: "18-25", category: "savings" },
-            { id: 4, name: "David Brown", avatar: "DB", savingsRate: 38, monthlyIncome: 6200, monthlyExpenses: 3844, savings: 2356, trend: "up", region: "north", ageGroup: "36-50", category: "savings" },
-            { id: 5, name: "Lisa Garcia", avatar: "LG", savingsRate: 37, monthlyIncome: 5800, monthlyExpenses: 3654, savings: 2146, trend: "down", region: "north", ageGroup: "26-35", category: "savings" },
-            { id: 6, name: "James Miller", avatar: "JM", savingsRate: 36, monthlyIncome: 7100, monthlyExpenses: 4544, savings: 2556, trend: "up", region: "europe", ageGroup: "36-50", category: "savings" },
-            { id: 7, name: "Maria Rodriguez", avatar: "MR", savingsRate: 35, monthlyIncome: 4900, monthlyExpenses: 3185, savings: 1715, trend: "steady", region: "other", ageGroup: "26-35", category: "savings" },
-            { id: 8, name: "Robert Smith", avatar: "RS", savingsRate: 34, monthlyIncome: 5400, monthlyExpenses: 3564, savings: 1836, trend: "up", region: "north", ageGroup: "50+", category: "savings" },
-            { id: 9, name: "Jennifer Lee", avatar: "JL", savingsRate: 33, monthlyIncome: 6100, monthlyExpenses: 4087, savings: 2013, trend: "down", region: "asia", ageGroup: "26-35", category: "savings" },
-            { id: 10, name: "Thomas Taylor", avatar: "TT", savingsRate: 32, monthlyIncome: 4800, monthlyExpenses: 3264, savings: 1536, trend: "up", region: "europe", ageGroup: "18-25", category: "savings" },
-            { id: 11, name: "Jessica White", avatar: "JW", savingsRate: 31, monthlyIncome: 5300, monthlyExpenses: 3657, savings: 1643, trend: "steady", region: "north", ageGroup: "26-35", category: "savings" },
-            { id: 12, name: "Christopher Martin", avatar: "CM", savingsRate: 30, monthlyIncome: 6700, monthlyExpenses: 4690, savings: 2010, trend: "up", region: "north", ageGroup: "36-50", category: "savings" },
-            { id: 13, name: "Amanda Thompson", avatar: "AT", savingsRate: 29, monthlyIncome: 5100, monthlyExpenses: 3621, savings: 1479, trend: "down", region: "other", ageGroup: "26-35", category: "savings" },
-            { id: 14, name: "Daniel Harris", avatar: "DH", savingsRate: 28, monthlyIncome: 5900, monthlyExpenses: 4248, savings: 1652, trend: "up", region: "asia", ageGroup: "18-25", category: "savings" },
-            { id: 15, name: "Michelle Clark", avatar: "MC", savingsRate: 27, monthlyIncome: 4700, monthlyExpenses: 3431, savings: 1269, trend: "steady", region: "europe", ageGroup: "36-50", category: "savings" },
-            { id: 16, name: "Kevin Lewis", avatar: "KL", savingsRate: 26, monthlyIncome: 6300, monthlyExpenses: 4662, savings: 1638, trend: "up", region: "north", ageGroup: "26-35", category: "savings" },
-            { id: 17, name: "Emily Walker", avatar: "EW", savingsRate: 25, monthlyIncome: 4400, monthlyExpenses: 3300, savings: 1100, trend: "down", region: "north", ageGroup: "18-25", category: "savings" },
-            { id: 18, name: "Brian Hall", avatar: "BH", savingsRate: 24, monthlyIncome: 5700, monthlyExpenses: 4332, savings: 1368, trend: "steady", region: "asia", ageGroup: "36-50", category: "savings" },
-            { id: 19, name: "Nicole Allen", avatar: "NA", savingsRate: 23, monthlyIncome: 5000, monthlyExpenses: 3850, savings: 1150, trend: "up", region: "europe", ageGroup: "26-35", category: "savings" },
-            { id: 20, name: "Steven Young", avatar: "SY", savingsRate: 22, monthlyIncome: 5500, monthlyExpenses: 4290, savings: 1210, trend: "down", region: "north", ageGroup: "50+", category: "savings" },
-            { id: 21, name: "Kimberly King", avatar: "KK", savingsRate: 21, monthlyIncome: 4600, monthlyExpenses: 3634, savings: 966, trend: "steady", region: "other", ageGroup: "26-35", category: "savings" },
-            { id: 22, name: "Joshua Wright", avatar: "JW", savingsRate: 20, monthlyIncome: 6100, monthlyExpenses: 4880, savings: 1220, trend: "up", region: "north", ageGroup: "36-50", category: "savings" },
-            { id: 23, name: "Samantha Scott", avatar: "SS", savingsRate: 19, monthlyIncome: 4900, monthlyExpenses: 3969, savings: 931, trend: "down", region: "asia", ageGroup: "18-25", category: "savings" },
-            { id: 24, name: "John Doe", avatar: "JD", savingsRate: 18, monthlyIncome: 5200, monthlyExpenses: 4264, savings: 936, trend: "up", region: "north", ageGroup: "26-35", category: "savings" },
-            { id: 25, name: "Rebecca Green", avatar: "RG", savingsRate: 17, monthlyIncome: 4800, monthlyExpenses: 3984, savings: 816, trend: "steady", region: "europe", ageGroup: "26-35", category: "savings" },
-            { id: 26, name: "Jason Adams", avatar: "JA", savingsRate: 16, monthlyIncome: 5400, monthlyExpenses: 4536, savings: 864, trend: "up", region: "north", ageGroup: "36-50", category: "savings" },
-            { id: 27, name: "Stephanie Baker", avatar: "SB", savingsRate: 15, monthlyIncome: 4300, monthlyExpenses: 3655, savings: 645, trend: "down", region: "other", ageGroup: "18-25", category: "savings" },
-            { id: 28, name: "Timothy Nelson", avatar: "TN", savingsRate: 14, monthlyIncome: 5700, monthlyExpenses: 4902, savings: 798, trend: "steady", region: "asia", ageGroup: "26-35", category: "savings" },
-            { id: 29, name: "Laura Carter", avatar: "LC", savingsRate: 13, monthlyIncome: 5000, monthlyExpenses: 4350, savings: 650, trend: "up", region: "north", ageGroup: "36-50", category: "savings" },
-            { id: 30, name: "Jeffrey Mitchell", avatar: "JM", savingsRate: 12, monthlyIncome: 4600, monthlyExpenses: 4048, savings: 552, trend: "down", region: "europe", ageGroup: "50+", category: "savings" }
-        ];
-
-        // Pagination variables
-        let currentPage = 1;
-        const pageSize = 10;
-        let filteredData = [...leaderboardData];
-        let sortedData = [...leaderboardData];
 
         // DOM elements
         const leaderboardBody = document.getElementById('leaderboard-body');
@@ -314,30 +222,40 @@
         const lastPageBtn = document.getElementById('last-page');
         const refreshBtn = document.getElementById('refresh-btn');
 
+
         // Initialize the leaderboard
-        document.addEventListener('DOMContentLoaded', function() {
-            renderLeaderboard();
-            setupPagination();
-            setupEventListeners();
+        let currentPage = 1;
+        document.addEventListener('DOMContentLoaded', function () {
+
+            const pageLimit = parseInt(document.getElementById('page-size').value) || 1;
+            renderLeaderboard([currentPage, pageLimit]);
+
+
         });
 
         // Render leaderboard table
-        function renderLeaderboard() {
+        async function renderLeaderboard(page = [1, pageLimit]) {
             leaderboardBody.innerHTML = '';
-            
-            const startIndex = (currentPage - 1) * pageSize;
-            const endIndex = Math.min(startIndex + pageSize, filteredData.length);
-            const pageData = filteredData.slice(startIndex, endIndex);
-            
-            pageData.forEach((user, index) => {
-                const globalRank = startIndex + index + 1;
+            currentPage = page[0];
+            pageLimit = page[1];
+            console.log(pageLimit)
+            let res = await fetch('/leaderboard/data', {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ page }),
+            });
+            res = await res.json();
+
+            res.users.forEach((user, index) => {
+                const globalRank = (res.startRank) + index + 1;
+                let savingsRate = 0;
+                if (user.totalIncome > 0) {
+                    savingsRate = ((user.totalIncome - user.totalExpense) / user.totalIncome) * 100;
+                }
                 const row = document.createElement('tr');
                 row.className = 'hover:bg-gray-50 transition';
-                if (user.name === "John Doe") {
-                    row.className += ' bg-blue-50';
-                }
-                
-                // Determine rank badge
                 let rankBadge = '';
                 if (globalRank === 1) {
                     rankBadge = `<div class="w-8 h-8 rounded-full bg-gold flex items-center justify-center text-white font-bold">1</div>`;
@@ -348,46 +266,37 @@
                 } else {
                     rankBadge = `<div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 font-bold">${globalRank}</div>`;
                 }
-                
-                // Determine trend icon
-                let trendIcon = '';
-                if (user.trend === 'up') {
-                    trendIcon = `<i class="fas fa-arrow-up text-success"></i>`;
-                } else if (user.trend === 'down') {
-                    trendIcon = `<i class="fas fa-arrow-down text-danger"></i>`;
-                } else {
-                    trendIcon = `<i class="fas fa-minus text-gray-400"></i>`;
-                }
-                
+
+
                 row.innerHTML = `
                     <td class="px-6 py-4 whitespace-nowrap">
-                        ${rankBadge}
+                       ${rankBadge}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div class="flex items-center">
                             <div class="flex-shrink-0 h-10 w-10 bg-primary rounded-full flex items-center justify-center text-white font-bold">
-                                ${user.avatar}
+                              ${user.userName.charAt(0)}
                             </div>
                             <div class="ml-4">
-                                <div class="text-sm font-medium text-gray-900">${user.name}</div>
-                                <div class="text-sm text-gray-500">${user.ageGroup}, ${getRegionName(user.region)}</div>
+                                <div class="text-sm font-medium text-gray-900">${user.userName}</div>
+                              
                             </div>
                         </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm font-medium text-gray-900">${user.savingsRate}%</div>
+                        <div class="text-sm font-medium text-gray-900">${savingsRate}%</div>
                         <div class="w-full bg-gray-200 rounded-full h-2">
-                            <div class="bg-green-600 h-2 rounded-full" style="width: ${user.savingsRate}%"></div>
+                            <div class="bg-green-600 h-2 rounded-full" style="width:${savingsRate}%"></div>
                         </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-900">$${user.monthlyIncome.toLocaleString()}</div>
+                        <div class="text-sm text-gray-900">$${user.totalIncome.toLocaleString()}</div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-900">$${user.monthlyExpenses.toLocaleString()}</div>
+                        <div class="text-sm text-gray-900">$${user.totalExpense.toLocaleString()}</div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm font-medium text-success">$${user.savings.toLocaleString()}</div>
+                        <div class="text-sm font-medium text-success">$${Math.max(user.totalIncome - user.totalExpense, 0)}</div>
                     </td>
                    
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -399,215 +308,98 @@
                         </div>
                     </td>
                 `;
-                
+
                 leaderboardBody.appendChild(row);
-            });
-            
-            // Update pagination info
-            pageStart.textContent = startIndex + 1;
-            pageEnd.textContent = endIndex;
-            totalItems.textContent = filteredData.length;
-        }
+                if (res.user.id.id.toString() === user.userId.toString()) {
+                    console.log("matchMedia")
+                    document.getElementById('myRank').innerHTML = `#${globalRank}`;
+                    document.getElementById('myIncome').innerHTML = `$${user.totalIncome}`;
+                    document.getElementById('myExpense').innerHTML = `$${user.totalExpense}`;
+                    document.getElementById('mySavingRate').innerHTML = `${savingsRate}%`
 
-        // Setup pagination
-        function setupPagination() {
-            const totalPages = Math.ceil(filteredData.length / pageSize);
-            paginationNumbers.innerHTML = '';
-            
-            // Always show first page
-            addPageNumber(1);
-            
-            // Show ellipsis if needed
-            if (currentPage > 3) {
-                const ellipsis = document.createElement('span');
-                ellipsis.className = 'px-3 py-1';
-                ellipsis.textContent = '...';
-                paginationNumbers.appendChild(ellipsis);
-            }
-            
-            // Show pages around current page
-            for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
-                if (i !== 1 && i !== totalPages) {
-                    addPageNumber(i);
                 }
-            }
-            
-            // Show ellipsis if needed
-            if (currentPage < totalPages - 2) {
-                const ellipsis = document.createElement('span');
-                ellipsis.className = 'px-3 py-1';
-                ellipsis.textContent = '...';
-                paginationNumbers.appendChild(ellipsis);
-            }
-            
-            // Always show last page if there is more than one page
-            if (totalPages > 1) {
-                addPageNumber(totalPages);
-            }
-            
-            // Update button states
-            prevPageBtn.disabled = currentPage === 1;
-            nextPageBtn.disabled = currentPage === totalPages;
-            firstPageBtn.disabled = currentPage === 1;
-            lastPageBtn.disabled = currentPage === totalPages;
-            
-            // Add disabled styles
-            [prevPageBtn, nextPageBtn, firstPageBtn, lastPageBtn].forEach(btn => {
-                if (btn.disabled) {
-                    btn.classList.add('opacity-50', 'cursor-not-allowed');
-                } else {
-                    btn.classList.remove('opacity-50', 'cursor-not-allowed');
-                }
-            });
-        }
 
-        function addPageNumber(page) {
-            const pageButton = document.createElement('button');
-            pageButton.className = `px-3 py-1 rounded-lg border transition ${currentPage === page ? 'bg-primary text-white border-primary' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`;
-            pageButton.textContent = page;
-            pageButton.addEventListener('click', () => {
-                currentPage = page;
-                renderLeaderboard();
-                setupPagination();
             });
-            paginationNumbers.appendChild(pageButton);
-        }
+            let pages = document.getElementById('pages');
+            pages.innerHTML = '';
+            // console.log(res.count+"1")
+            let pageLength = Math.ceil(Number(Number(res?.count) / Number(pageLimit)));
+            const prev = document.createElement("button");
+            prev.textContent = "Prev";
+            prev.disabled = currentPage === 1;
+            prev.className = "px-3 py-1 rounded-lg bg-primary-dark text-white hover:bg-primary-dark transition";
+            prev.addEventListener("click", () => {
+                if (currentPage > 1) renderLeaderboard([currentPage - 1, pageLimit]);
+            });
+            pages.appendChild(prev);
 
-        // Setup event listeners
-        function setupEventListeners() {
-            // Pagination controls
-            prevPageBtn.addEventListener('click', () => {
-                if (currentPage > 1) {
-                    currentPage--;
-                    renderLeaderboard();
-                    setupPagination();
-                }
-            });
-            
-            nextPageBtn.addEventListener('click', () => {
-                if (currentPage < Math.ceil(filteredData.length / pageSize)) {
-                    currentPage++;
-                    renderLeaderboard();
-                    setupPagination();
-                }
-            });
-            
-            firstPageBtn.addEventListener('click', () => {
-                currentPage = 1;
-                renderLeaderboard();
-                setupPagination();
-            });
-            
-            lastPageBtn.addEventListener('click', () => {
-                currentPage = Math.ceil(filteredData.length / pageSize);
-                renderLeaderboard();
-                setupPagination();
-            });
-            
-            // Page size change
-            pageSizeSelect.addEventListener('change', () => {
-                pageSize = parseInt(pageSizeSelect.value);
-                currentPage = 1;
-                renderLeaderboard();
-                setupPagination();
-            });
-            
-            // Search functionality
-            searchInput.addEventListener('input', () => {
-                applyFilters();
-            });
-            
-            // Filter changes
-            [periodFilter, categoryFilter, regionFilter, ageFilter].forEach(filter => {
-                filter.addEventListener('change', () => {
-                    applyFilters();
+            for (let i = 0; i < pageLength; i++) {
+
+                const btn = document.createElement("button");
+                btn.textContent = i + 1;
+                btn.className = "px-3 py-1 rounded-lg bg-primary text-white hover:bg-primary-dark transition";
+
+                btn.addEventListener("click", () => {
+                    renderLeaderboard([i + 1, pageLimit]);
                 });
+
+                pages.appendChild(btn);
+
+            }
+            const next = document.createElement("button");
+            next.textContent = "Next";
+            next.disabled = currentPage === pageLength;
+            next.addEventListener("click", () => {
+                if (currentPage < pageLength) renderLeaderboard([currentPage + 1, pageLimit]);
             });
-            
-            // Refresh button
-            refreshBtn.addEventListener('click', () => {
-                // In a real app, this would fetch updated data from the server
-                // For this demo, we'll just reset filters and pagination
-                searchInput.value = '';
-                periodFilter.value = 'all';
-                categoryFilter.value = 'all';
-                regionFilter.value = 'all';
-                ageFilter.value = 'all';
-                currentPage = 1;
-                filteredData = [...leaderboardData];
-                renderLeaderboard();
-                setupPagination();
-            });
-            
-            // Filter tags
-            document.querySelectorAll('.filter-tag').forEach(tag => {
-                tag.addEventListener('click', function() {
-                    // Toggle active state
-                    document.querySelectorAll('.filter-tag').forEach(t => {
-                        t.classList.remove('active-filter', 'bg-primary', 'text-white');
-                        t.classList.add('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
-                    });
-                    
-                    if (!this.classList.contains('active-filter')) {
-                        this.classList.add('active-filter', 'bg-primary', 'text-white');
-                        this.classList.remove('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
-                    } else {
-                        this.classList.remove('active-filter', 'bg-primary', 'text-white');
-                        this.classList.add('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
-                    }
-                    
-                    applyFilters();
-                });
-            });
+            next.className = "px-3 py-1 rounded-lg bg-primary-dark text-white hover:bg-primary-dark transition";
+            pages.appendChild(next);
+
+            //total pages and current page
+            document.getElementById('pageNumber').innerText = (res.startRank + 1);
+            document.getElementById('totalPages').innerText = (res.startRank + pageLimit);
+            document.getElementById('total_length').innerText = Math.ceil(res?.count / pageLimit);
+
+        
+
+
+
         }
 
-        // Apply all filters
+
+        //     // Search functionality
+        searchInput.addEventListener('input', () => {
+            applyFilters();
+        });
+
+
+
+        // // Apply all filters
         function applyFilters() {
-            let result = [...leaderboardData];
-            
+            const table = document.getElementById('leaderboard-body');
+            const rows = table.children;
+            console.log(rows)
+
             // Search filter
             const searchTerm = searchInput.value.toLowerCase();
-            if (searchTerm) {
-                result = result.filter(user => 
-                    user.name.toLowerCase().includes(searchTerm)
-                );
-            }
-            
-            // Region filter
-            if (regionFilter.value !== 'all') {
-                result = result.filter(user => user.region === regionFilter.value);
-            }
-            
-            // Age filter
-            if (ageFilter.value !== 'all') {
-                result = result.filter(user => user.ageGroup === ageFilter.value);
-            }
-            
-            // Update filtered data and reset to first page
-            filteredData = result;
-            currentPage = 1;
-            
-            renderLeaderboard();
-            setupPagination();
+            Array.from(rows).forEach((row) => {
+                const text = row.textContent.toLowerCase().trim();
+                if (text.includes(searchTerm)) {
+                    row.style.display = '';
+                }
+                else {
+                    row.style.display = 'none'
+
+                }
+            })
+
+
         }
 
-        // Helper function to get region name
-        function getRegionName(regionCode) {
-            const regions = {
-                'north': 'North America',
-                'europe': 'Europe',
-                'asia': 'Asia',
-                'other': 'Other'
-            };
-            return regions[regionCode] || regionCode;
-        }
+
     </script>
 
-    <style>
-        .active-filter {
-            background-color: #4f46e5;
-            color: white;
-        }
-    </style>
+
 </body>
+
 </html>

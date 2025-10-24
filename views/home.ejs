@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <style>
         * {
             margin: 0;
@@ -580,16 +580,17 @@
             <div class="card">
                 <div class="section-title">
                     <span>Expense Overview</span>
-                    <a href="#">View Report <i class="fas fa-chevron-right"></i></a>
+                   
                 </div>
+                
                 <div class="chart-container">
                     <%completeHeights.forEach((val,ind)=>{%>
 
-                        <!-- <div class="bar" style="height:<%=val.height%>%">
+                         <div class="bar" style="height:<%=val.height%>%">
                             <div class="bar-label">
                                 <%=val.month%>
                             </div>
-                        </div> -->
+                        </div> 
 
                         <% })%>
 
@@ -982,48 +983,18 @@
                 }
             }
 
-            // // Form submission
-            // form.addEventListener('submit', function (e) {
-            //     e.preventDefault();
-
-            //     // In a real application, you would send the data to a server here
-            //     // For this example, we'll just show a success message
-
-            //     // Show success message
-            //     successMessage.classList.remove('hidden');
-            //     closeInputBox()
-
-            //     // Scroll to success message
-            //     successMessage.scrollIntoView({ behavior: 'smooth' });
-
-            //     // Reset form after 2 seconds
-            //     setTimeout(function () {
-            //         form.reset();
-
-            //         updatePreview();
-
-            //         // Hide success message
-            //         successMessage.classList.add('hidden');
-            //     }, 3000);
-            // });
+           
 
             // Reset button
             resetBtn.addEventListener('click', function () {
                 form.reset();
-                // Reset date to current date/time
-
-
-                // Update preview
+            
                 updatePreview();
             });
         });
-        
-
-
-
 
     </script>
-   
+
 </body>
 
 </html>

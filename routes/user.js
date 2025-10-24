@@ -23,7 +23,7 @@ const mongoose = require("mongoose");
 const Transaction = require("../models/transaction");
 const transaction = require("../models/transaction");
 const { count } = require("console");
-const { totalmem } = require("os");
+const { totalmem, type } = require("os");
 // const { count } = require("console");
 // const { height } = require("pdfkit/js/page");
 
@@ -53,9 +53,10 @@ app.get("/", auth, async (req, res) => {
       {
         $match: {
           date: {
-            $gte: new Date(new Date().getFullYear(), 0, 1),
-            $lt: new Date(new Date().getFullYear() + 1, 0, 1),
+            $gte: new Date(new Date().getFullYear(), 0, 1), // Jan 1 of current year
+            $lt: new Date(new Date().getFullYear() + 1, 0, 1), // Jan 1 of next year
           },
+          userId: new mongoose.Types.ObjectId(req.user.id.id),
           type: "expense",
         },
       },
@@ -66,15 +67,24 @@ app.get("/", auth, async (req, res) => {
         },
       },
       {
+        $sort: { "_id.month": 1 }, // optional, sorts by month
+      },
+      {
         $group: {
           _id: null,
-          months: {
-            $push: { month: "$_id.month", amount: "$totalAmount" },
-          },
+          months: { $push: { month: "$_id.month", amount: "$totalAmount" } },
           overAllMax: { $max: "$totalAmount" },
         },
       },
+      {
+        $project: {
+          _id: 0,
+          months: 1,
+          overAllMax: 1,
+        },
+      },
     ]);
+
     let overAllMax = yearlyReport[0] ? yearlyReport[0].overAllMax : 0;
     let allHeights =
       yearlyReport[0]?.months?.map((val) => {
@@ -83,6 +93,7 @@ app.get("/", auth, async (req, res) => {
           height: (val.amount / overAllMax) * 100 || 0,
         };
       }) || [];
+    console.log(overAllMax);
     const monthNames = [
       "Jan",
       "Feb",
@@ -103,6 +114,7 @@ app.get("/", auth, async (req, res) => {
       });
       return { month: m, height: found ? found.height : 0 };
     });
+    console.log(completeHeights);
 
     res.render("home", {
       expense: expenses,
@@ -536,32 +548,30 @@ app.post("/delete/:id", auth, async (req, res) => {
 async function generateReports(userId) {
   const startDate = new Date();
   startDate.setMonth(startDate.getMonth() - 1);
-  let daywiseExp = await expense.findAll({
-    where: {
-      userId: userId,
-      date: {
-        [Op.gte]: startDate,
-      },
+  let daywiseExp = await Transaction.find({
+    userId: userId,
+    date: {
+      $gte: startDate,
     },
+    type: "expense",
   });
 
-  let daywiseIncome = await Income.findAll({
-    where: {
-      userId: userId,
-      date: {
-        [Op.gte]: startDate,
-      },
+  let daywiseIncome = await Transaction.find({
+    userId: userId,
+    date: {
+      $gte: startDate,
     },
+    type: "income",
   });
   const currentYear = new Date().getFullYear();
-  const expenses = await expense.findAll({
-    where: {
-      userId: userId,
-      date: {
-        [Op.gte]: new Date(currentYear, 0, 1),
-        [Op.lte]: new Date(currentYear, 11, 31, 23, 59, 59),
-      },
+  const expenses = await Transaction.find({
+    userId: userId,
+    date: {
+      $gt: new Date(currentYear, 0, 1),
+      $lte: new Date(currentYear, 11, 31, 23, 59, 59),
     },
+
+    type: "expense",
   });
   let monthlyExpense = Array(12).fill(0);
   expenses.forEach((exp) => {
@@ -570,14 +580,13 @@ async function generateReports(userId) {
       monthlyExpense[month] += exp.amount;
     }
   });
-  const incomes = await Income.findAll({
-    where: {
-      userId: userId,
-      date: {
-        [Op.gte]: new Date(currentYear, 0, 1),
-        [Op.lte]: new Date(currentYear, 11, 31, 23, 59, 59),
-      },
+  const incomes = await Transaction.find({
+    userId: userId,
+    date: {
+     $gt: new Date(currentYear, 0, 1),
+      $lte: new Date(currentYear, 11, 31, 23, 59, 59),
     },
+    type: "income",
   });
   let monthlyIncome = Array(12).fill(0);
   incomes.forEach((exp) => {
@@ -619,6 +628,7 @@ app.get("/download-report", auth, isPremium, async (req, res) => {
     const { daywiseExp, daywiseIncome, monthlyReport } = await generateReports(
       req.user.id.id
     );
+    
     const doc = new PDFDocument({ margin: 40 });
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", "attachment; filename=report.pdf");
@@ -735,6 +745,7 @@ app.get("/download-report", auth, isPremium, async (req, res) => {
     });
 
     doc.end();
+  
   } catch (err) {
     console.error(err);
     res.status(500).send("Error generating PDF");

@@ -17,7 +17,7 @@
             --light: #f8f9fa;
             --dark: #4338ca;
             --gray: #6c757d;
-            --light:#e9ecef;
+            --light: #e9ecef;
         }
     </style>
     <script>
@@ -145,7 +145,7 @@
             <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
                 <h3 class="text-lg font-semibold text-gray-800">Recent Transactions</h3>
                 <div class="flex space-x-2">
-                    <button
+                    <button onclick="download()"
                         class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-lg text-sm transition flex items-center">
                         <i class="fas fa-download mr-2"></i> Export
                     </button>
@@ -519,6 +519,13 @@
                     alert('Failed to delete transaction');
                 }
             });
+        }
+
+        //download report
+        async function download() {
+           await fetch('/download-report',{method:"GET"});
+
+
         }
 
 

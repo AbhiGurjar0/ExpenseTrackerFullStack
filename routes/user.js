@@ -24,8 +24,6 @@ const Transaction = require("../models/transaction");
 const transaction = require("../models/transaction");
 const { count } = require("console");
 const { totalmem, type } = require("os");
-// const { count } = require("console");
-// const { height } = require("pdfkit/js/page");
 
 //home
 
@@ -93,7 +91,7 @@ app.get("/", auth, async (req, res) => {
           height: (val.amount / overAllMax) * 100 || 0,
         };
       }) || [];
-    console.log(overAllMax);
+    // console.log(overAllMax);
     const monthNames = [
       "Jan",
       "Feb",
@@ -114,7 +112,7 @@ app.get("/", auth, async (req, res) => {
       });
       return { month: m, height: found ? found.height : 0 };
     });
-    console.log(completeHeights);
+    // console.log(completeHeights);
 
     res.render("home", {
       expense: expenses,
@@ -301,6 +299,7 @@ app.post("/filter", auth, async (req, res) => {
   pageLimit = parseInt(pageLimit);
   pageNum = parseInt(pageNum);
 
+  console.log(filters)
   let query = {};
   query.userId = req.user.id.id;
   if (filters.dateRange && filters.dateRange !== "any") {
@@ -347,6 +346,7 @@ app.post("/filter", auth, async (req, res) => {
   if (filters.amountRange && filters.amountRange !== "any") {
     const [min, max] = filters.amountRange.split("_").map(Number);
     query.amount = { $gte: min, $lte: max };
+    console.log([min,max])
   }
 
   const totalDocs = await Transaction.countDocuments(query);
@@ -415,7 +415,7 @@ app.post("/leaderboard/data", auth, async (req, res) => {
         date: { $gte: startOfYear, $lt: endOfYear },
       },
     },
-    // 2️⃣ Group by userId to get totals
+    // Group by userId to get totals
     {
       $group: {
         _id: "$userId",
@@ -445,7 +445,7 @@ app.post("/leaderboard/data", auth, async (req, res) => {
       $project: {
         _id: 0,
         userId: "$_id",
-        userName: "$userDetails.userName", // matches your User schema
+        userName: "$userDetails.userName", // matching User schema
         totalExpense: 1,
         totalIncome: 1,
       },
@@ -466,7 +466,7 @@ app.post("/leaderboard/data", auth, async (req, res) => {
         },
       },
     },
-    // 6️⃣ Sort by saving rate descending
+    // Sort by saving rate descending
     {
       $sort: { savingRate: -1 },
     },
@@ -498,7 +498,7 @@ app.post("/leaderboard/data", auth, async (req, res) => {
 app.post("/api/transactions", auth, async (req, res) => {
   let { date } = req.body;
   date = new Date(date);
-  console.log("Request body:", new Date(date));
+  // console.log("Request body:", new Date(date));
   let transactions = await Transaction.find({
     date: {
       $gte: new Date(date.setHours(0, 0, 0, 0)),

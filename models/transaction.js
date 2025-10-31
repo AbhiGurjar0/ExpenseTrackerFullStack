@@ -1,10 +1,8 @@
 const mongoose = require("mongoose");
 
 let transactionSchema = mongoose.Schema({
-  amount: {
-    type: String,
-    required: true,
-  },
+  amount: { type: Number, required: true },
+
   title: {
     type: String,
     required: true,

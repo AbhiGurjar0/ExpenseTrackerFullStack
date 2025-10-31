@@ -569,90 +569,39 @@
                 <div class="stat-value">₹<%=totalIncome-totalExpense%></div>
                 <div class="stat-title">Current Balance</div>
             </div>
-            <div class="card stat-card budget">
-                <i class="fas fa-chart-line"></i>
-                <div class="stat-value">₹800</div>
-                <div class="stat-title">Monthly Budget</div>
+            <div class="card stat-card balance ">
+                <div data-type="expense" onclick="openInputBox(this)" class="action-btn add-expense justify-center items-center flex ">
+                <i class="fas fa-plus"></i>
+                <span>Add Transaction</span>
             </div>
+            </div>
+            
         </div>
 
         <div class="main-content mb-10">
             <div class="card">
                 <div class="section-title">
                     <span>Expense Overview</span>
-                   
+
                 </div>
-                
+
                 <div class="chart-container">
                     <%completeHeights.forEach((val,ind)=>{%>
 
-                         <div class="bar" style="height:<%=val.height%>%">
+                        <div class="bar" style="height:<%=val.height%>%">
                             <div class="bar-label">
                                 <%=val.month%>
                             </div>
-                        </div> 
+                        </div>
 
                         <% })%>
 
                 </div>
             </div>
         </div>
-        <div class="main-content2">
-            <div class="card2">
-                <div class="section-title">
-                    <span>Quick Actions</span>
-                </div>
-                <div class="quick-actions">
-                    <div data-type="expense" onclick="openInputBox(this)" class="action-btn add-expense">
-                        <i class="fas fa-plus"></i>
-                        <span>Add Expense</span>
-                    </div>
-                    <div data-type="income" onclick="openInputBox(this)" class="action-btn add-income">
-                        <i class="fas fa-plus"></i>
-                        <span>Add Income</span>
-                    </div>
-                    <a href="#" class="action-btn set-budget">
-                        <i class="fas fa-chart-pie"></i>
-                        <span>Set Budget</span>
-                    </a>
-                </div>
+        <div class="main-content2 w-full">
 
-                <div class="section-title" style="margin-top: 25px;">
-                    <span>Budget Status</span>
-                </div>
-                <div class="category-list">
-                    <div class="category-item">
-                        <div class="category-info">
-                            <div class="category-name">Monthly Budget</div>
-                        </div>
-                        <div class="category-amount">₹800 / ₹1,000</div>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress" style="width: 80%; background-color: #4361ee;"></div>
-                    </div>
-
-                    <div class="category-item">
-                        <div class="category-info">
-                            <div class="category-name">Food Budget</div>
-                        </div>
-                        <div class="category-amount">₹320 / ₹400</div>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress" style="width: 80%; background-color: #f72585;"></div>
-                    </div>
-
-                    <div class="category-item">
-                        <div class="category-info">
-                            <div class="category-name">Entertainment Budget</div>
-                        </div>
-                        <div class="category-amount">₹120 / ₹150</div>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress" style="width: 80%; background-color: #f8961e;"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="card2">
+            <div class="card2 w-full">
                 <div class="section-title">
                     <span>Recent Transactions</span>
                     <a href="/transactions">See All <i class="fas fa-chevron-right"></i></a>
@@ -983,12 +932,12 @@
                 }
             }
 
-           
+
 
             // Reset button
             resetBtn.addEventListener('click', function () {
                 form.reset();
-            
+
                 updatePreview();
             });
         });

@@ -122,17 +122,25 @@
                 </h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="bg-gradient-to-br from-premium-accent to-blue-900 rounded-xl p-5 text-center shadow-lg">
-                        <div class="text-3xl font-bold mb-2">$<%=user.totalExpense%></div>
-                        <div class="text-gray-300">Total Transactions</div>
+                        <div class="text-3xl font-bold mb-2">₹<%=user.totalExpense%></div>
+                        <div class="text-gray-300">Total Expense</div>
                         
                     </div>
                     <div class="bg-gradient-to-br from-premium-gold to-yellow-700 rounded-xl p-5 text-center shadow-lg">
-                        <div class="text-3xl font-bold mb-2">$<%=totalIncome%></div>
+                        <div class="text-3xl font-bold mb-2">₹<%=totalIncome%></div>
                         <div class="text-gray-300">Total Income</div>
                        
                     </div>
                     <div class="bg-gradient-to-br from-green-600 to-green-800 rounded-xl p-5 text-center shadow-lg">
-                        <div class="text-3xl font-bold mb-2"><%=((totalIncome-user.totalExpense)/totalIncome)*100%>%</div>
+                        <div class="text-3xl font-bold mb-2">
+                            <%let remaining = totalIncome-user.totalExpense;
+                            if(remaining>0)
+                            {%>
+                                <%=((remaining/totalIncome)*100).toFixed(2)%>
+                           <% }else{%>
+                               <%= 0%>
+                            <%}%>
+                            %</div>
                         <div class="text-gray-300">Savings Rate</div>
                        
                     </div>

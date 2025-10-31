@@ -22,7 +22,7 @@
             --light: #f8f9fa;
             --dark: #4338ca;
             --gray: #6c757d;
-            --light:#e9ecef;
+            --light: #e9ecef;
         }
     </style>
     <script>
@@ -103,7 +103,7 @@
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Savings</th>
 
-                           
+
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200" id="leaderboard-body">
@@ -130,7 +130,7 @@
                     <select id="page-size"
                         class="border border-gray-300 rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-primary">
                         <option value="1">1</option>
-                        <option value="20">20</option>
+                        <option value="20" selected>20</option>
                         <option value="50">50</option>
                     </select>
                 </div>
@@ -238,8 +238,26 @@
         // Initialize the leaderboard
         let currentPage = 1;
         document.addEventListener('DOMContentLoaded', function () {
+            const select = document.getElementById('page-size');
 
-            const pageLimit = parseInt(document.getElementById('page-size').value) || 1;
+            //  Restore saved value
+            const savedValue = localStorage.getItem('pageSize');
+            if (savedValue) {
+                select.value = savedValue;
+            }
+
+            // Get value (now reflects user's last choice)
+            const pageLimit = parseInt(select.value) || 1;
+            console.log("Page Limit:", pageLimit);
+
+            // Save new value whenever user changes it
+            select.addEventListener('change', function () {
+                localStorage.setItem('pageSize', select.value);
+                
+                location.reload();
+            });
+            
+          
             renderLeaderboard([currentPage, pageLimit]);
 
 
@@ -296,19 +314,19 @@
                         </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm font-medium text-gray-900">${savingsRate}%</div>
+                        <div class="text-sm font-medium text-gray-900">${savingsRate.toFixed(2)}%</div>
                         <div class="w-full bg-gray-200 rounded-full h-2">
-                            <div class="bg-green-600 h-2 rounded-full" style="width:${savingsRate}%"></div>
+                            <div class="bg-green-600 h-2 rounded-full" style="width:${savingsRate.toFixed(2)}%"></div>
                         </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-900">$${user.totalIncome.toLocaleString()}</div>
+                        <div class="text-sm text-gray-900">₹${user.totalIncome.toLocaleString()}</div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-900">$${user.totalExpense.toLocaleString()}</div>
+                        <div class="text-sm text-gray-900">₹${user.totalExpense.toLocaleString()}</div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm font-medium text-success">$${Math.max(user.totalIncome - user.totalExpense, 0)}</div>
+                        <div class="text-sm font-medium text-success">₹${Math.max(user.totalIncome - user.totalExpense, 0)}</div>
                     </td>
                    
                     
@@ -318,9 +336,9 @@
                 if (res.user.id.id.toString() === user.userId.toString()) {
                     console.log("matchMedia")
                     document.getElementById('myRank').innerHTML = `#${globalRank}`;
-                    document.getElementById('myIncome').innerHTML = `$${user.totalIncome}`;
-                    document.getElementById('myExpense').innerHTML = `$${user.totalExpense}`;
-                    document.getElementById('mySavingRate').innerHTML = `${savingsRate}%`
+                    document.getElementById('myIncome').innerHTML = `₹${user.totalIncome}`;
+                    document.getElementById('myExpense').innerHTML = `₹${user.totalExpense}`;
+                    document.getElementById('mySavingRate').innerHTML = `${savingsRate.toFixed(2)}%`
 
                 }
 
